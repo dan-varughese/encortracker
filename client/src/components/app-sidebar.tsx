@@ -5,6 +5,7 @@ import {
   ClipboardCheck,
   CalendarDays,
   MessageSquareText,
+  BookOpen,
 } from "lucide-react";
 import {
   Sidebar,
@@ -24,6 +25,7 @@ const navItems = [
   { title: "Dashboard", href: "/", icon: LayoutDashboard },
   { title: "CBT Nuggets", href: "/lessons", icon: MonitorPlay },
   { title: "Labs", href: "/labs", icon: FlaskConical },
+  { title: "Exam Topics", href: "/topics", icon: BookOpen },
   { title: "Practice Tests", href: "/tests", icon: ClipboardCheck },
   { title: "Weekly Plan", href: "/plan", icon: CalendarDays },
   { title: "Reddit Tips", href: "/tips", icon: MessageSquareText },

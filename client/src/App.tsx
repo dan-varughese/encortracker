@@ -23,6 +23,7 @@ const Labs = lazy(() => import("@/pages/labs"));
 const PracticeTests = lazy(() => import("@/pages/practice-tests"));
 const WeeklyPlan = lazy(() => import("@/pages/weekly-plan"));
 const RedditTips = lazy(() => import("@/pages/reddit-tips"));
+const Topics = lazy(() => import("@/pages/topics"));
 
 function RouteFallback() {
   return (
@@ -44,6 +45,7 @@ function AppRouter() {
         <Route path="/tests" component={PracticeTests} />
         <Route path="/plan" component={WeeklyPlan} />
         <Route path="/tips" component={RedditTips} />
+        <Route path="/topics" component={Topics} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>
