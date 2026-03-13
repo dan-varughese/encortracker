@@ -11,9 +11,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plane, Home } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 import type { WeeklyPlan as WeeklyPlanType, WeekStatus } from "@shared/schema";
 
 export default function WeeklyPlan() {
+  const { isAuthenticated, requireAuth } = useAuth();
   const { data: weeks, isLoading } = useQuery<WeeklyPlanType[]>({
     queryKey: ["/api/weekly-plan"],
   });
@@ -45,6 +47,11 @@ export default function WeeklyPlan() {
         <p className="text-sm text-muted-foreground">
           10-week plan: March 16 — May 24, 2026
         </p>
+        {!isAuthenticated && (
+          <p className="text-xs text-muted-foreground mt-1">
+            Read-only mode is on. Unlock edits to change week status.
+          </p>
+        )}
       </div>
 
       <div className="space-y-4">
@@ -73,9 +80,11 @@ export default function WeeklyPlan() {
                 </div>
                 <Select
                   value={w.status}
-                  onValueChange={(val) =>
-                    mutation.mutate({ id: w.id, status: val as WeekStatus })
-                  }
+                  onValueChange={(val) => {
+                    if (!requireAuth()) return;
+                    mutation.mutate({ id: w.id, status: val as WeekStatus });
+                  }}
+                  disabled={mutation.isPending && mutation.variables?.id === w.id}
                 >
                   <SelectTrigger
                     className={`w-36 h-7 text-xs ${

@@ -19,7 +19,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { Plus, TrendingUp, TrendingDown, Minus } from "lucide-react";
@@ -37,6 +36,8 @@ import {
   PolarRadiusAxis,
   Radar,
 } from "recharts";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 import type { PracticeTest } from "@shared/schema";
 
 const DOMAINS = [
@@ -57,6 +58,8 @@ export default function PracticeTests() {
   const [score, setScore] = useState("");
   const [notes, setNotes] = useState("");
   const [domainScores, setDomainScores] = useState<Record<string, string>>({});
+  const { toast } = useToast();
+  const { isAuthenticated, requireAuth } = useAuth();
 
   const { data: tests, isLoading } = useQuery<PracticeTest[]>({
     queryKey: ["/api/practice-tests"],
@@ -83,14 +86,34 @@ export default function PracticeTests() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!requireAuth()) return;
+
+    const parsedScore = Number.parseInt(score, 10);
+    if (!Number.isFinite(parsedScore) || parsedScore < 0 || parsedScore > 100) {
+      toast({
+        title: "Invalid score",
+        description: "Overall score must be a number between 0 and 100.",
+      });
+      return;
+    }
+
     const ds: Record<string, number> = {};
     for (const [k, v] of Object.entries(domainScores)) {
-      if (v) ds[k] = parseInt(v);
+      if (!v) continue;
+      const parsedValue = Number.parseInt(v, 10);
+      if (!Number.isFinite(parsedValue) || parsedValue < 0 || parsedValue > 100) {
+        toast({
+          title: "Invalid domain score",
+          description: `${k} must be a number between 0 and 100.`,
+        });
+        return;
+      }
+      ds[k] = parsedValue;
     }
     mutation.mutate({
       platform,
       date,
-      overallScore: parseInt(score),
+      overallScore: parsedScore,
       domainScores: ds,
       notes,
     });
@@ -135,13 +158,24 @@ export default function PracticeTests() {
           <p className="text-sm text-muted-foreground">
             {tests?.length ?? 0} tests logged
           </p>
+          {!isAuthenticated && (
+            <p className="text-xs text-muted-foreground mt-1">
+              Read-only mode is on. Unlock edits to log new scores.
+            </p>
+          )}
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button size="sm" data-testid="button-add-test">
-              <Plus className="h-4 w-4 mr-1" /> Log Score
-            </Button>
-          </DialogTrigger>
+          <Button
+            size="sm"
+            type="button"
+            onClick={() => {
+              if (!requireAuth()) return;
+              setOpen(true);
+            }}
+            data-testid="button-add-test"
+          >
+            <Plus className="h-4 w-4 mr-1" /> Log Score
+          </Button>
           <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Log Practice Test</DialogTitle>

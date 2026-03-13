@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
 import type { Lab } from "@shared/schema";
 
 const PLATFORM_COLORS: Record<string, string> = {
@@ -26,6 +27,7 @@ const PLATFORM_COLORS: Record<string, string> = {
 export default function Labs() {
   const [weekFilter, setWeekFilter] = useState("all");
   const [platformFilter, setPlatformFilter] = useState("all");
+  const { isAuthenticated, requireAuth } = useAuth();
 
   const { data: labs, isLoading } = useQuery<Lab[]>({
     queryKey: ["/api/labs"],
@@ -81,6 +83,11 @@ export default function Labs() {
       </div>
 
       <Progress value={pct} className="h-2" data-testid="progress-labs" />
+      {!isAuthenticated && (
+        <p className="text-xs text-muted-foreground">
+          Read-only mode is on. Unlock edits to update lab completion.
+        </p>
+      )}
 
       {/* Filters */}
       <div className="flex flex-wrap gap-2">
@@ -132,8 +139,10 @@ export default function Labs() {
                     <Checkbox
                       checked={lab.done}
                       onCheckedChange={(checked) => {
+                        if (!requireAuth()) return;
                         mutation.mutate({ id: lab.id, done: !!checked });
                       }}
+                      disabled={mutation.isPending && mutation.variables?.id === lab.id}
                       className="mt-0.5"
                       data-testid={`checkbox-lab-${lab.id}`}
                     />

@@ -1,5 +1,11 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
+import {
+  clearEditorAuthCookie,
+  getEditorPassword,
+  isEditorAuthenticated,
+  setEditorAuthCookie,
+} from "./auth";
 import { storage } from "./storage";
 import {
   updateLessonSchema,
@@ -9,18 +15,52 @@ import {
   updateTopicSchema,
 } from "@shared/schema";
 
+function requireEditorAuth(req: Request, res: Response, next: NextFunction) {
+  if (isEditorAuthenticated(req)) {
+    return next();
+  }
+
+  return res.status(401).json({ error: "Authentication required for changes" });
+}
+
+function parseNumericId(rawId: string | string[]) {
+  const value = Array.isArray(rawId) ? rawId[0] : rawId;
+  const id = Number.parseInt(value, 10);
+  return Number.isFinite(id) ? id : null;
+}
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  app.get("/api/auth/session", (req, res) => {
+    res.json({ authenticated: isEditorAuthenticated(req) });
+  });
+
+  app.post("/api/auth/login", (req, res) => {
+    const password = typeof req.body?.password === "string" ? req.body.password : "";
+    if (password !== getEditorPassword()) {
+      return res.status(401).json({ error: "Incorrect password" });
+    }
+
+    setEditorAuthCookie(res);
+    return res.json({ authenticated: true });
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    clearEditorAuthCookie(res);
+    res.json({ authenticated: false });
+  });
+
   // ─── CBT Lessons ──────────────────────────────────────
   app.get("/api/lessons", async (_req, res) => {
     const lessons = await storage.getLessons();
     res.json(lessons);
   });
 
-  app.patch("/api/lessons/:id", async (req, res) => {
-    const id = parseInt(req.params.id);
+  app.patch("/api/lessons/:id", requireEditorAuth, async (req, res) => {
+    const id = parseNumericId(req.params.id);
+    if (id === null) return res.status(400).json({ error: "Invalid lesson id" });
     const parsed = updateLessonSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: parsed.error.message });
@@ -36,8 +76,9 @@ export async function registerRoutes(
     res.json(labs);
   });
 
-  app.patch("/api/labs/:id", async (req, res) => {
-    const id = parseInt(req.params.id);
+  app.patch("/api/labs/:id", requireEditorAuth, async (req, res) => {
+    const id = parseNumericId(req.params.id);
+    if (id === null) return res.status(400).json({ error: "Invalid lab id" });
     const parsed = updateLabSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: parsed.error.message });
@@ -53,8 +94,9 @@ export async function registerRoutes(
     res.json(plan);
   });
 
-  app.patch("/api/weekly-plan/:id", async (req, res) => {
-    const id = parseInt(req.params.id);
+  app.patch("/api/weekly-plan/:id", requireEditorAuth, async (req, res) => {
+    const id = parseNumericId(req.params.id);
+    if (id === null) return res.status(400).json({ error: "Invalid week id" });
     const parsed = updateWeekSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: parsed.error.message });
@@ -70,7 +112,7 @@ export async function registerRoutes(
     res.json(tests);
   });
 
-  app.post("/api/practice-tests", async (req, res) => {
+  app.post("/api/practice-tests", requireEditorAuth, async (req, res) => {
     const parsed = insertPracticeTestSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: parsed.error.message });
@@ -85,8 +127,9 @@ export async function registerRoutes(
     res.json(topics);
   });
 
-  app.patch("/api/topics/:id", async (req, res) => {
-    const id = parseInt(req.params.id);
+  app.patch("/api/topics/:id", requireEditorAuth, async (req, res) => {
+    const id = parseNumericId(req.params.id);
+    if (id === null) return res.status(400).json({ error: "Invalid topic id" });
     const parsed = updateTopicSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: parsed.error.message });

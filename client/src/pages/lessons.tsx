@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
 import type { CbtLesson, LessonStatus } from "@shared/schema";
 
 const DOMAIN_COLORS: Record<string, string> = {
@@ -31,6 +32,7 @@ export default function Lessons() {
   const [weekFilter, setWeekFilter] = useState("all");
   const [domainFilter, setDomainFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const { isAuthenticated, requireAuth } = useAuth();
 
   const { data: lessons, isLoading } = useQuery<CbtLesson[]>({
     queryKey: ["/api/lessons"],
@@ -89,6 +91,11 @@ export default function Lessons() {
       </div>
 
       <Progress value={pct} className="h-2" data-testid="progress-lessons" />
+      {!isAuthenticated && (
+        <p className="text-xs text-muted-foreground">
+          Read-only mode is on. Unlock edits to mark lessons watched.
+        </p>
+      )}
 
       {/* Filters */}
       <div className="flex flex-wrap gap-2">
@@ -154,11 +161,13 @@ export default function Lessons() {
                       <Checkbox
                         checked={lesson.status === "Watched"}
                         onCheckedChange={(checked) => {
+                          if (!requireAuth()) return;
                           mutation.mutate({
                             id: lesson.id,
                             status: checked ? "Watched" : "Not Started",
                           });
                         }}
+                        disabled={mutation.isPending && mutation.variables?.id === lesson.id}
                         data-testid={`checkbox-lesson-${lesson.id}`}
                       />
                       <span className="text-xs text-muted-foreground tabular-nums w-8 shrink-0">
