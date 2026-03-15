@@ -10,14 +10,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plane, Home } from "lucide-react";
+import { Plane, Home, CheckCircle2, Circle } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
-import type { WeeklyPlan as WeeklyPlanType, WeekStatus } from "@shared/schema";
+import type { WeeklyPlan as WeeklyPlanType, WeekStatus, Lab } from "@shared/schema";
+
+/** Map "Week 1" → "Wk 1", etc. so we can match weekly_plan rows to labs */
+function weekToLabKey(weekName: string): string {
+  const m = weekName.match(/Week\s*(\d+)/i);
+  return m ? `Wk ${m[1]}` : weekName;
+}
 
 export default function WeeklyPlan() {
   const { isAuthenticated, requireAuth } = useAuth();
-  const { data: weeks, isLoading } = useQuery<WeeklyPlanType[]>({
+  const { data: weeks, isLoading: weeksLoading } = useQuery<WeeklyPlanType[]>({
     queryKey: ["/api/weekly-plan"],
+  });
+  const { data: labs, isLoading: labsLoading } = useQuery<Lab[]>({
+    queryKey: ["/api/labs"],
   });
 
   const mutation = useMutation({
@@ -29,7 +38,9 @@ export default function WeeklyPlan() {
     },
   });
 
-  if (isLoading || !weeks) {
+  const isLoading = weeksLoading || labsLoading;
+
+  if (isLoading || !weeks || !labs) {
     return (
       <div className="p-4 md:p-6 space-y-4">
         <Skeleton className="h-8 w-48" />
@@ -39,6 +50,13 @@ export default function WeeklyPlan() {
       </div>
     );
   }
+
+  // Group labs by their week key ("Wk 1", "Wk 2", etc.)
+  const labsByWeek = labs.reduce<Record<string, Lab[]>>((acc, lab) => {
+    if (!acc[lab.week]) acc[lab.week] = [];
+    acc[lab.week].push(lab);
+    return acc;
+  }, {});
 
   return (
     <div className="p-4 md:p-6 space-y-4" data-testid="page-weekly-plan">
@@ -55,103 +73,135 @@ export default function WeeklyPlan() {
       </div>
 
       <div className="space-y-4">
-        {weeks.map((w) => (
-          <Card
-            key={w.id}
-            className={`bg-card border-card-border ${
-              w.isTravel ? "border-l-4 border-l-amber-500" : ""
-            }`}
-            data-testid={`plan-week-${w.id}`}
-          >
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <div className="flex items-center gap-2">
-                  <CardTitle className="text-base font-semibold">{w.week}</CardTitle>
-                  <span className="text-xs text-muted-foreground">{w.dates}</span>
-                  {w.isTravel ? (
-                    <Badge variant="secondary" className="bg-amber-500/15 text-amber-400 border-amber-500/20 text-[10px] gap-1">
-                      <Plane className="h-3 w-3" /> Travel
-                    </Badge>
-                  ) : (
-                    <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-400/80 border-emerald-500/20 text-[10px] gap-1">
-                      <Home className="h-3 w-3" /> Home
-                    </Badge>
-                  )}
-                </div>
-                <Select
-                  value={w.status}
-                  onValueChange={(val) => {
-                    if (!requireAuth()) return;
-                    mutation.mutate({ id: w.id, status: val as WeekStatus });
-                  }}
-                  disabled={mutation.isPending && mutation.variables?.id === w.id}
-                >
-                  <SelectTrigger
-                    className={`w-36 h-7 text-xs ${
-                      w.status === "Complete"
-                        ? "border-emerald-500/30 text-emerald-400"
-                        : w.status === "In Progress"
-                        ? "border-primary/30 text-primary"
-                        : ""
-                    }`}
-                    data-testid={`select-week-status-${w.id}`}
-                  >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Not Started">Not Started</SelectItem>
-                    <SelectItem value="In Progress">In Progress</SelectItem>
-                    <SelectItem value="Complete">Complete</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-                <div>
-                  <h4 className="font-semibold text-muted-foreground mb-1 uppercase tracking-wider text-[10px]">
-                    Focus
-                  </h4>
-                  <p className="whitespace-pre-line text-foreground/90 leading-relaxed">
-                    {w.focus}
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-muted-foreground mb-1 uppercase tracking-wider text-[10px]">
-                    CBT Lessons
-                  </h4>
-                  <p className="whitespace-pre-line text-foreground/90 leading-relaxed">
-                    {w.cbtLessons}
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-muted-foreground mb-1 uppercase tracking-wider text-[10px]">
-                    Other Study
-                  </h4>
-                  <p className="whitespace-pre-line text-foreground/90 leading-relaxed">
-                    {w.otherStudy}
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-muted-foreground mb-1 uppercase tracking-wider text-[10px]">
-                    Labs
-                  </h4>
-                  <p className="whitespace-pre-line text-foreground/90 leading-relaxed">
-                    {w.labs}
-                  </p>
-                  {w.ankiTags && (
-                    <div className="mt-2">
-                      <span className="text-[10px] text-muted-foreground">Anki: </span>
-                      <Badge variant="secondary" className="text-[9px] px-1 py-0 font-mono">
-                        {w.ankiTags}
+        {weeks.map((w) => {
+          const labKey = weekToLabKey(w.week);
+          const weekLabs = labsByWeek[labKey] || [];
+          const doneCount = weekLabs.filter((l) => l.done).length;
+
+          return (
+            <Card
+              key={w.id}
+              className={`bg-card border-card-border ${
+                w.isTravel ? "border-l-4 border-l-amber-500" : ""
+              }`}
+              data-testid={`plan-week-${w.id}`}
+            >
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-base font-semibold">{w.week}</CardTitle>
+                    <span className="text-xs text-muted-foreground">{w.dates}</span>
+                    {w.isTravel ? (
+                      <Badge variant="secondary" className="bg-amber-500/15 text-amber-400 border-amber-500/20 text-[10px] gap-1">
+                        <Plane className="h-3 w-3" /> Travel
                       </Badge>
-                    </div>
-                  )}
+                    ) : (
+                      <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-400/80 border-emerald-500/20 text-[10px] gap-1">
+                        <Home className="h-3 w-3" /> Home
+                      </Badge>
+                    )}
+                  </div>
+                  <Select
+                    value={w.status}
+                    onValueChange={(val) => {
+                      if (!requireAuth()) return;
+                      mutation.mutate({ id: w.id, status: val as WeekStatus });
+                    }}
+                    disabled={mutation.isPending && mutation.variables?.id === w.id}
+                  >
+                    <SelectTrigger
+                      className={`w-36 h-7 text-xs ${
+                        w.status === "Complete"
+                          ? "border-emerald-500/30 text-emerald-400"
+                          : w.status === "In Progress"
+                          ? "border-primary/30 text-primary"
+                          : ""
+                      }`}
+                      data-testid={`select-week-status-${w.id}`}
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Not Started">Not Started</SelectItem>
+                      <SelectItem value="In Progress">In Progress</SelectItem>
+                      <SelectItem value="Complete">Complete</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+                  <div>
+                    <h4 className="font-semibold text-muted-foreground mb-1 uppercase tracking-wider text-[10px]">
+                      Focus
+                    </h4>
+                    <p className="whitespace-pre-line text-foreground/90 leading-relaxed">
+                      {w.focus}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-muted-foreground mb-1 uppercase tracking-wider text-[10px]">
+                      CBT Lessons
+                    </h4>
+                    <p className="whitespace-pre-line text-foreground/90 leading-relaxed">
+                      {w.cbtLessons}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-muted-foreground mb-1 uppercase tracking-wider text-[10px]">
+                      Other Study
+                    </h4>
+                    <p className="whitespace-pre-line text-foreground/90 leading-relaxed">
+                      {w.otherStudy}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-muted-foreground mb-1 uppercase tracking-wider text-[10px]">
+                      Labs{weekLabs.length > 0 && (
+                        <span className="ml-1 text-muted-foreground/60 normal-case">
+                          ({doneCount}/{weekLabs.length})
+                        </span>
+                      )}
+                    </h4>
+                    {weekLabs.length > 0 ? (
+                      <ul className="space-y-0.5">
+                        {weekLabs.map((lab) => (
+                          <li
+                            key={lab.id}
+                            className={`flex items-start gap-1.5 ${
+                              lab.done ? "text-muted-foreground" : "text-foreground/90"
+                            }`}
+                          >
+                            {lab.done ? (
+                              <CheckCircle2 className="h-3 w-3 mt-0.5 shrink-0 text-emerald-400" />
+                            ) : (
+                              <Circle className="h-3 w-3 mt-0.5 shrink-0 text-muted-foreground/40" />
+                            )}
+                            <span className={lab.done ? "line-through" : ""}>
+                              {lab.title}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-foreground/90 leading-relaxed whitespace-pre-line">
+                        {w.labs}
+                      </p>
+                    )}
+                    {w.ankiTags && (
+                      <div className="mt-2">
+                        <span className="text-[10px] text-muted-foreground">Anki: </span>
+                        <Badge variant="secondary" className="text-[9px] px-1 py-0 font-mono">
+                          {w.ankiTags}
+                        </Badge>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
