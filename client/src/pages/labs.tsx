@@ -39,6 +39,7 @@ export default function Labs() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/labs"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/weekly-plan"] });
     },
   });
 
