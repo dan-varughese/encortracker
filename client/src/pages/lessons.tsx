@@ -61,6 +61,7 @@ export default function Lessons() {
   }
 
   const watched = lessons.filter((l) => l.status === "Watched").length;
+  const skipped = lessons.filter((l) => l.status === "Skipped").length;
   const pct = Math.round((watched / lessons.length) * 100);
 
   const weeks = Array.from(new Set(lessons.map((l) => l.week)));
@@ -88,6 +89,11 @@ export default function Lessons() {
         <h1 className="text-xl font-semibold tracking-tight">CBT Nuggets Lessons</h1>
         <p className="text-sm text-muted-foreground">
           {watched}/{lessons.length} lessons watched
+          {skipped > 0 && (
+            <span className="text-amber-400/70 ml-1">
+              ({skipped} skipped)
+            </span>
+          )}
         </p>
       </div>
 
@@ -153,47 +159,88 @@ export default function Lessons() {
               </CardHeader>
               <CardContent className="p-0">
                 <div className="divide-y divide-border">
-                  {grouped[weekKey].map((lesson) => (
-                    <div
-                      key={lesson.id}
-                      className="flex items-center gap-3 px-4 py-2 hover:bg-muted/30 transition-colors"
-                      data-testid={`lesson-row-${lesson.id}`}
-                    >
-                      <Checkbox
-                        checked={lesson.status === "Watched"}
-                        onCheckedChange={(checked) => {
-                          if (!requireAuth()) return;
-                          mutation.mutate({
-                            id: lesson.id,
-                            status: checked ? "Watched" : "Not Started",
-                          });
-                        }}
-                        disabled={mutation.isPending && mutation.variables?.id === lesson.id}
-                        data-testid={`checkbox-lesson-${lesson.id}`}
-                      />
-                      <span className="text-xs text-muted-foreground tabular-nums w-8 shrink-0">
-                        #{lesson.number}
-                      </span>
-                      <span
-                        className={`text-sm flex-1 min-w-0 truncate ${
-                          lesson.status === "Watched" ? "text-muted-foreground line-through" : ""
-                        }`}
+                  {grouped[weekKey].map((lesson) => {
+                    const isSkipped = lesson.status === "Skipped";
+                    const isWatched = lesson.status === "Watched";
+                    const isBusy = mutation.isPending && mutation.variables?.id === lesson.id;
+
+                    return (
+                      <div
+                        key={lesson.id}
+                        className="flex items-center gap-3 px-4 py-2 hover:bg-muted/30 transition-colors group"
+                        data-testid={`lesson-row-${lesson.id}`}
                       >
-                        {lesson.title}
-                      </span>
-                      <span className="text-xs text-muted-foreground tabular-nums shrink-0 hidden sm:block">
-                        {lesson.duration}
-                      </span>
-                      <Badge
-                        variant="secondary"
-                        className={`text-[10px] px-1.5 py-0 shrink-0 hidden md:inline-flex ${
-                          DOMAIN_COLORS[lesson.domain] || ""
-                        }`}
-                      >
-                        {lesson.domain.replace("Architecture (QoS)", "QoS")}
-                      </Badge>
-                    </div>
-                  ))}
+                        <Checkbox
+                          checked={isWatched}
+                          onCheckedChange={(checked) => {
+                            if (!requireAuth()) return;
+                            mutation.mutate({
+                              id: lesson.id,
+                              status: checked ? "Watched" : "Not Started",
+                            });
+                          }}
+                          disabled={isBusy || isSkipped}
+                          className={isSkipped ? "opacity-30" : ""}
+                          data-testid={`checkbox-lesson-${lesson.id}`}
+                        />
+                        <span className="text-xs text-muted-foreground tabular-nums w-8 shrink-0">
+                          #{lesson.number}
+                        </span>
+                        <span
+                          className={`text-sm flex-1 min-w-0 truncate ${
+                            isWatched
+                              ? "text-muted-foreground line-through"
+                              : isSkipped
+                              ? "text-amber-400/60 line-through"
+                              : ""
+                          }`}
+                        >
+                          {lesson.title}
+                        </span>
+                        <span className="text-xs text-muted-foreground tabular-nums shrink-0 hidden sm:block">
+                          {lesson.duration}
+                        </span>
+
+                        {/* Skipped badge — click to un-skip */}
+                        {isSkipped ? (
+                          <Badge
+                            variant="secondary"
+                            className="text-[10px] px-1.5 py-0 shrink-0 bg-amber-500/15 text-amber-400 border-amber-500/20 cursor-pointer hover:bg-amber-500/25"
+                            onClick={() => {
+                              if (!requireAuth()) return;
+                              mutation.mutate({ id: lesson.id, status: "Not Started" });
+                            }}
+                          >
+                            Skipped ✕
+                          </Badge>
+                        ) : (
+                          /* Skip button — visible on hover for non-watched lessons */
+                          !isWatched && (
+                            <button
+                              className="text-[10px] px-1.5 py-0.5 rounded shrink-0 text-muted-foreground/40 hover:text-amber-400 hover:bg-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (!requireAuth()) return;
+                                mutation.mutate({ id: lesson.id, status: "Skipped" });
+                              }}
+                              disabled={isBusy}
+                            >
+                              Skip
+                            </button>
+                          )
+                        )}
+
+                        <Badge
+                          variant="secondary"
+                          className={`text-[10px] px-1.5 py-0 shrink-0 hidden md:inline-flex ${
+                            DOMAIN_COLORS[lesson.domain] || ""
+                          }`}
+                        >
+                          {lesson.domain.replace("Architecture (QoS)", "QoS")}
+                        </Badge>
+                      </div>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
