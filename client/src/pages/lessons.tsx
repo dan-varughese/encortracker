@@ -44,6 +44,7 @@ export default function Lessons() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/lessons"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/weekly-plan"] });
     },
   });
 
