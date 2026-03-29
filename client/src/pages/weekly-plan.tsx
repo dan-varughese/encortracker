@@ -30,8 +30,8 @@ function computeWeekStatus(
   if (totalItems === 0) return "Not Started";
 
   const doneItems =
-    weekLessons.filter((l) => l.status === "Watched").length +
-    weekLabs.filter((l) => l.done).length;
+    weekLessons.filter((l) => l.status === "Watched" || l.status === "Skipped").length +
+    weekLabs.filter((l) => l.done || l.skipped).length;
 
   if (doneItems === 0) return "Not Started";
   if (doneItems === totalItems) return "Complete";
@@ -163,8 +163,8 @@ export default function WeeklyPlan() {
           const labKey = weekToLabKey(w.week);
           const weekLabs = labsByWeek[labKey] || [];
           const weekLessons = lessonsByWeek[labKey] || [];
-          const labsDoneCount = weekLabs.filter((l) => l.done).length;
-          const lessonsDoneCount = weekLessons.filter((l) => l.status === "Watched").length;
+          const labsDoneCount = weekLabs.filter((l) => l.done || l.skipped).length;
+          const lessonsDoneCount = weekLessons.filter((l) => l.status === "Watched" || l.status === "Skipped").length;
 
           return (
             <Card
@@ -290,27 +290,37 @@ export default function WeeklyPlan() {
                     </h4>
                     {weekLabs.length > 0 ? (
                       <ul className="space-y-0.5">
-                        {weekLabs.map((lab) => (
-                          <li
-                            key={lab.id}
-                            className={`flex items-start gap-1.5 cursor-pointer group ${
-                              lab.done ? "text-muted-foreground" : "text-foreground/90"
-                            }`}
-                            onClick={() => {
-                              if (!requireAuth()) return;
-                              labMutation.mutate({ id: lab.id, done: !lab.done });
-                            }}
-                          >
-                            {lab.done ? (
-                              <CheckCircle2 className="h-3 w-3 mt-0.5 shrink-0 text-emerald-400" />
-                            ) : (
-                              <Circle className="h-3 w-3 mt-0.5 shrink-0 text-muted-foreground/40 group-hover:text-muted-foreground/70" />
-                            )}
-                            <span className={lab.done ? "line-through" : ""}>
-                              {lab.title}
-                            </span>
-                          </li>
-                        ))}
+                        {weekLabs.map((lab) => {
+                          const labDone = lab.done || lab.skipped;
+                          return (
+                            <li
+                              key={lab.id}
+                              className={`flex items-start gap-1.5 cursor-pointer group ${
+                                labDone
+                                  ? lab.skipped
+                                    ? "text-amber-400/60"
+                                    : "text-muted-foreground"
+                                  : "text-foreground/90"
+                              }`}
+                              onClick={() => {
+                                if (!requireAuth()) return;
+                                if (lab.skipped) return;
+                                labMutation.mutate({ id: lab.id, done: !lab.done });
+                              }}
+                            >
+                              {labDone ? (
+                                <CheckCircle2 className={`h-3 w-3 mt-0.5 shrink-0 ${
+                                  lab.skipped ? "text-amber-400" : "text-emerald-400"
+                                }`} />
+                              ) : (
+                                <Circle className="h-3 w-3 mt-0.5 shrink-0 text-muted-foreground/40 group-hover:text-muted-foreground/70" />
+                              )}
+                              <span className={labDone ? "line-through" : ""}>
+                                {lab.title}
+                              </span>
+                            </li>
+                          );
+                        })}
                       </ul>
                     ) : (
                       <p className="text-foreground/90 leading-relaxed whitespace-pre-line">
