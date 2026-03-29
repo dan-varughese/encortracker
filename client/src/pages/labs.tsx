@@ -34,8 +34,8 @@ export default function Labs() {
   });
 
   const mutation = useMutation({
-    mutationFn: async ({ id, done }: { id: number; done: boolean }) => {
-      await apiRequest("PATCH", `/api/labs/${id}`, { done });
+    mutationFn: async (payload: { id: number; done?: boolean; skipped?: boolean }) => {
+      await apiRequest("PATCH", `/api/labs/${payload.id}`, payload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/labs"] });
@@ -56,6 +56,7 @@ export default function Labs() {
   }
 
   const doneCount = labs.filter((l) => l.done).length;
+  const skippedCount = labs.filter((l) => l.skipped).length;
   const pct = Math.round((doneCount / labs.length) * 100);
 
   const weeks = Array.from(new Set(labs.map((l) => l.week)));
@@ -80,6 +81,11 @@ export default function Labs() {
         <h1 className="text-xl font-semibold tracking-tight">Lab Exercises</h1>
         <p className="text-sm text-muted-foreground">
           {doneCount}/{labs.length} labs completed
+          {skippedCount > 0 && (
+            <span className="text-amber-400/70 ml-1">
+              ({skippedCount} skipped)
+            </span>
+          )}
         </p>
       </div>
 
@@ -131,40 +137,82 @@ export default function Labs() {
             </CardHeader>
             <CardContent className="p-0">
               <div className="divide-y divide-border">
-                {headerLabs.map((lab) => (
-                  <div
-                    key={lab.id}
-                    className="flex items-start gap-3 px-4 py-2.5 hover:bg-muted/30 transition-colors"
-                    data-testid={`lab-row-${lab.id}`}
-                  >
-                    <Checkbox
-                      checked={lab.done}
-                      onCheckedChange={(checked) => {
-                        if (!requireAuth()) return;
-                        mutation.mutate({ id: lab.id, done: !!checked });
-                      }}
-                      disabled={mutation.isPending && mutation.variables?.id === lab.id}
-                      className="mt-0.5"
-                      data-testid={`checkbox-lab-${lab.id}`}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className={`text-sm ${lab.done ? "text-muted-foreground line-through" : ""}`}>
-                        {lab.title}
-                      </div>
-                      <div className="text-[11px] text-muted-foreground/70 mt-0.5 line-clamp-1">
-                        {lab.practice}
-                      </div>
-                    </div>
-                    <Badge
-                      variant="secondary"
-                      className={`text-[10px] px-1.5 py-0 shrink-0 ${
-                        PLATFORM_COLORS[lab.platform] || ""
-                      }`}
+                {headerLabs.map((lab) => {
+                  const isBusy = mutation.isPending && mutation.variables?.id === lab.id;
+
+                  return (
+                    <div
+                      key={lab.id}
+                      className="flex items-start gap-3 px-4 py-2.5 hover:bg-muted/30 transition-colors group"
+                      data-testid={`lab-row-${lab.id}`}
                     >
-                      {lab.platform}
-                    </Badge>
-                  </div>
-                ))}
+                      <Checkbox
+                        checked={lab.done}
+                        onCheckedChange={(checked) => {
+                          if (!requireAuth()) return;
+                          mutation.mutate({ id: lab.id, done: !!checked });
+                        }}
+                        disabled={isBusy || lab.skipped}
+                        className={`mt-0.5 ${lab.skipped ? "opacity-30" : ""}`}
+                        data-testid={`checkbox-lab-${lab.id}`}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div
+                          className={`text-sm ${
+                            lab.done
+                              ? "text-muted-foreground line-through"
+                              : lab.skipped
+                              ? "text-amber-400/60 line-through"
+                              : ""
+                          }`}
+                        >
+                          {lab.title}
+                        </div>
+                        <div className="text-[11px] text-muted-foreground/70 mt-0.5 line-clamp-1">
+                          {lab.practice}
+                        </div>
+                      </div>
+
+                      {/* Skipped badge — click to un-skip */}
+                      {lab.skipped ? (
+                        <Badge
+                          variant="secondary"
+                          className="text-[10px] px-1.5 py-0 shrink-0 bg-amber-500/15 text-amber-400 border-amber-500/20 cursor-pointer hover:bg-amber-500/25"
+                          onClick={() => {
+                            if (!requireAuth()) return;
+                            mutation.mutate({ id: lab.id, skipped: false });
+                          }}
+                        >
+                          Skipped ✕
+                        </Badge>
+                      ) : (
+                        /* Skip button — visible on hover for non-done labs */
+                        !lab.done && (
+                          <button
+                            className="text-[10px] px-1.5 py-0.5 rounded shrink-0 text-muted-foreground/40 hover:text-amber-400 hover:bg-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity mt-0.5"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (!requireAuth()) return;
+                              mutation.mutate({ id: lab.id, skipped: true });
+                            }}
+                            disabled={isBusy}
+                          >
+                            Skip
+                          </button>
+                        )
+                      )}
+
+                      <Badge
+                        variant="secondary"
+                        className={`text-[10px] px-1.5 py-0 shrink-0 ${
+                          PLATFORM_COLORS[lab.platform] || ""
+                        }`}
+                      >
+                        {lab.platform}
+                      </Badge>
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
