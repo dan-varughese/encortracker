@@ -29,6 +29,7 @@ export interface Lab {
   practice: string;
   platform: string;
   done: boolean;
+  skipped: boolean;
 }
 
 export const updateLabSchema = z.object({
