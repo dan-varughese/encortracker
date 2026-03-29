@@ -109,7 +109,9 @@ function getDbReady() {
 
 async function initDb() {
   await sql`CREATE TABLE IF NOT EXISTS lessons (id INT PRIMARY KEY, number INT, title TEXT, duration TEXT, domain TEXT, week TEXT, status TEXT DEFAULT 'Not Started')`;
-  await sql`CREATE TABLE IF NOT EXISTS labs (id INT PRIMARY KEY, number INT, week_header TEXT, week TEXT, domain TEXT, title TEXT, practice TEXT, platform TEXT, done BOOLEAN DEFAULT false)`;
+  await sql`CREATE TABLE IF NOT EXISTS labs (id INT PRIMARY KEY, number INT, week_header TEXT, week TEXT, domain TEXT, title TEXT, practice TEXT, platform TEXT, done BOOLEAN DEFAULT false, skipped BOOLEAN DEFAULT false)`;
+  // Migration: add skipped column if missing
+  try { await sql`ALTER TABLE labs ADD COLUMN IF NOT EXISTS skipped BOOLEAN DEFAULT false`; } catch(_) {}
   await sql`CREATE TABLE IF NOT EXISTS weekly_plan (id INT PRIMARY KEY, week TEXT, dates TEXT, focus TEXT, cbt_lessons TEXT, other_study TEXT, labs_desc TEXT, status TEXT DEFAULT 'Not Started', anki_tags TEXT, is_travel BOOLEAN DEFAULT false)`;
   await sql`CREATE TABLE IF NOT EXISTS practice_tests (id SERIAL PRIMARY KEY, platform TEXT, date TEXT, overall_score INT, domain_scores JSONB DEFAULT '{}', notes TEXT DEFAULT '')`;
   await sql`CREATE TABLE IF NOT EXISTS topics (id INT PRIMARY KEY, domain TEXT, topic TEXT, subtopic TEXT, confidence INT DEFAULT 1, studied BOOLEAN DEFAULT false, cbt_ref TEXT, notes TEXT)`;
@@ -249,10 +251,14 @@ app.patch("/api/labs/:id", requireEditorAuth, async (req, res) => {
   try {
     await getDbReady();
     const id = parseInt(req.params.id);
-    const { done } = req.body;
-    if (typeof done !== "boolean") return res.status(400).json({ error: "Invalid" });
-    const rows = await sql`UPDATE labs SET done = ${done} WHERE id = ${id} RETURNING *`;
-    if (rows.length === 0) return res.status(404).json({ error: "Not found" });
+    const check = await sql`SELECT * FROM labs WHERE id = ${id}`;
+    if (check.length === 0) return res.status(404).json({ error: "Not found" });
+
+    const newDone = req.body.done !== undefined ? req.body.done : check[0].done;
+    const newSkipped = req.body.skipped !== undefined ? req.body.skipped : (check[0].skipped || false);
+    if (typeof newDone !== "boolean" || typeof newSkipped !== "boolean") return res.status(400).json({ error: "Invalid" });
+
+    const rows = await sql`UPDATE labs SET done = ${newDone}, skipped = ${newSkipped} WHERE id = ${id} RETURNING *`;
     res.json(mapLab(rows[0]));
   } catch (e) {
     console.error("PATCH /api/labs error:", e.message);
@@ -358,7 +364,7 @@ app.get("/api/reddit-tips", (req, res) => {
 
 // ─── Column mapping helpers (snake_case → camelCase) ───
 function mapLab(r) {
-  return { id: r.id, number: r.number, weekHeader: r.week_header, week: r.week, domain: r.domain, title: r.title, practice: r.practice, platform: r.platform, done: r.done };
+  return { id: r.id, number: r.number, weekHeader: r.week_header, week: r.week, domain: r.domain, title: r.title, practice: r.practice, platform: r.platform, done: r.done, skipped: r.skipped || false };
 }
 function mapWeek(r) {
   return { id: r.id, week: r.week, dates: r.dates, focus: r.focus, cbtLessons: r.cbt_lessons, otherStudy: r.other_study, labs: r.labs_desc, status: r.status, ankiTags: r.anki_tags, isTravel: r.is_travel };
