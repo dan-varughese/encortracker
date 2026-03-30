@@ -79,6 +79,8 @@ export default function WeeklyPlan() {
 
   // Track which week status syncs are in-flight to prevent loops
   const syncingRef = useRef<Set<number>>(new Set());
+  // Track recently manually-changed weeks to prevent auto-sync from overwriting them
+  const manualOverrideRef = useRef<Set<number>>(new Set());
 
   // Auto-sync week statuses whenever data changes.
   // Rules:
@@ -103,6 +105,7 @@ export default function WeeklyPlan() {
 
     for (const w of weeks) {
       if (syncingRef.current.has(w.id)) continue;
+      if (manualOverrideRef.current.has(w.id)) continue;
 
       const labKey = weekToLabKey(w.week);
       const weekLabs = labsByWeek[labKey] || [];
@@ -215,6 +218,8 @@ export default function WeeklyPlan() {
                     value={w.status}
                     onValueChange={(val) => {
                       if (!requireAuth()) return;
+                      manualOverrideRef.current.add(w.id);
+                      setTimeout(() => manualOverrideRef.current.delete(w.id), 3000);
                       weekStatusMutation.mutate({ id: w.id, status: val as WeekStatus });
                     }}
                     disabled={weekStatusMutation.isPending && weekStatusMutation.variables?.id === w.id}
@@ -278,7 +283,7 @@ export default function WeeklyPlan() {
                               ) : (
                                 <Circle className="h-3 w-3 mt-0.5 shrink-0 text-muted-foreground/40 group-hover:text-muted-foreground/70" />
                               )}
-                              <span className={isDone ? "line-through" : ""}>
+                              <span className={isComplete ? "line-through" : ""}>
                                 #{lesson.number} {lesson.title}
                                 <span className="text-muted-foreground/50 ml-1">
                                   ({lesson.duration})
