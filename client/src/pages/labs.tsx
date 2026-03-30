@@ -55,9 +55,9 @@ export default function Labs() {
     );
   }
 
-  const doneCount = labs.filter((l) => l.done).length;
+  const doneCount = labs.filter((l) => l.done || l.skipped).length;
   const skippedCount = labs.filter((l) => l.skipped).length;
-  const pct = Math.round((doneCount / labs.length) * 100);
+  const pct = labs.length > 0 ? Math.round((doneCount / labs.length) * 100) : 0;
 
   const weeks = Array.from(new Set(labs.map((l) => l.week)));
   const platforms = Array.from(new Set(labs.map((l) => l.platform)));
@@ -131,7 +131,7 @@ export default function Labs() {
               <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 {header}
                 <span className="ml-2 text-muted-foreground/60 normal-case">
-                  ({headerLabs.filter((l) => l.done).length}/{headerLabs.length})
+                  ({headerLabs.filter((l) => l.done || l.skipped).length}/{headerLabs.length})
                 </span>
               </CardTitle>
             </CardHeader>
