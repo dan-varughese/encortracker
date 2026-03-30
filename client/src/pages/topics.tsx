@@ -122,7 +122,7 @@ export default function Topics() {
   }
 
   const studiedCount = topics.filter((t) => t.studied).length;
-  const pct = Math.round((studiedCount / topics.length) * 100);
+  const pct = topics.length > 0 ? Math.round((studiedCount / topics.length) * 100) : 0;
   const avgConfidence = topics.length
     ? (topics.reduce((s, t) => s + t.confidence, 0) / topics.length).toFixed(1)
     : "0";
