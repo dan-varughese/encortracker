@@ -266,20 +266,29 @@ export default function WeeklyPlan() {
                       <ul className="space-y-0.5">
                         {weekLessons.map((lesson) => {
                           const isDone = lesson.status === "Watched";
+                          const isSkipped = lesson.status === "Skipped";
+                          const isComplete = isDone || isSkipped;
                           return (
                             <li
                               key={lesson.id}
-                              className={`flex items-start gap-1.5 cursor-pointer group ${
-                                isDone ? "text-muted-foreground" : "text-foreground/90"
+                              className={`flex items-start gap-1.5 ${
+                                isSkipped
+                                  ? "text-amber-400/60"
+                                  : isDone
+                                  ? "text-muted-foreground"
+                                  : "text-foreground/90 cursor-pointer group"
                               }`}
                               onClick={() => {
+                                if (isSkipped) return;
                                 if (!requireAuth()) return;
                                 const newStatus: LessonStatus = isDone ? "Not Started" : "Watched";
                                 lessonMutation.mutate({ id: lesson.id, status: newStatus });
                               }}
                             >
-                              {isDone ? (
-                                <CheckCircle2 className="h-3 w-3 mt-0.5 shrink-0 text-emerald-400" />
+                              {isComplete ? (
+                                <CheckCircle2 className={`h-3 w-3 mt-0.5 shrink-0 ${
+                                  isSkipped ? "text-amber-400" : "text-emerald-400"
+                                }`} />
                               ) : (
                                 <Circle className="h-3 w-3 mt-0.5 shrink-0 text-muted-foreground/40 group-hover:text-muted-foreground/70" />
                               )}
