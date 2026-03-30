@@ -62,7 +62,7 @@ export default function Lessons() {
 
   const watched = lessons.filter((l) => l.status === "Watched").length;
   const skipped = lessons.filter((l) => l.status === "Skipped").length;
-  const pct = Math.round((watched / lessons.length) * 100);
+  const pct = lessons.length > 0 ? Math.round((watched / lessons.length) * 100) : 0;
 
   const weeks = Array.from(new Set(lessons.map((l) => l.week)));
   const domains = Array.from(new Set(lessons.map((l) => l.domain)));
@@ -81,7 +81,7 @@ export default function Lessons() {
     return acc;
   }, {});
 
-  const weekOrder = ["Done", "Wk 1", "Wk 2", "Wk 3", "Wk 4", "Wk 5", "Wk 6", "Wk 7", "Wk 8"];
+  const weekOrder = ["Done", ...Array.from({ length: 10 }, (_, i) => `Wk ${i + 1}`)];
 
   return (
     <div className="p-4 md:p-6 space-y-4" data-testid="page-lessons">
