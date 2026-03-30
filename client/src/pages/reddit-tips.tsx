@@ -73,9 +73,15 @@ export default function RedditTips() {
                         data-testid={`tip-item-${idx}-${itemIdx}`}
                       >
                         <div className="flex items-start gap-3">
-                          <span className="text-xs text-muted-foreground font-mono shrink-0 mt-0.5 w-6 text-right">
-                            {item.col_b}
-                          </span>
+                          {item.col_b && /^\d+$/.test(item.col_b.trim()) ? (
+                            <span className="text-xs text-muted-foreground font-mono shrink-0 mt-0.5 w-6 text-right">
+                              {item.col_b}
+                            </span>
+                          ) : item.col_b ? (
+                            <Badge variant="secondary" className="text-[9px] px-1.5 py-0 shrink-0 mt-0.5 whitespace-nowrap">
+                              {item.col_b}
+                            </Badge>
+                          ) : null}
                           <div className="flex-1 min-w-0">
                             <div className="font-medium text-foreground">{item.col_c}</div>
                             {item.col_d && (
