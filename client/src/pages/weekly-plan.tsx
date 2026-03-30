@@ -174,7 +174,7 @@ export default function WeeklyPlan() {
       <div>
         <h1 className="text-xl font-semibold tracking-tight">Weekly Study Plan</h1>
         <p className="text-sm text-muted-foreground">
-          10-week plan: March 16 — May 24, 2026
+          11-week plan: March 16 — May 31, 2026
         </p>
         {!isAuthenticated && (
           <p className="text-xs text-muted-foreground mt-1">
