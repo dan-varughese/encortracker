@@ -80,7 +80,12 @@ export default function WeeklyPlan() {
   // Track which week status syncs are in-flight to prevent loops
   const syncingRef = useRef<Set<number>>(new Set());
 
-  // Auto-sync week statuses whenever data changes
+  // Auto-sync week statuses whenever data changes.
+  // Rules:
+  //   - Auto-promote "Not Started" → "In Progress" when any item is done
+  //   - Auto-promote to "Complete" when ALL items are done
+  //   - Auto-demote "Complete" → "In Progress" if an item gets unchecked
+  //   - NEVER demote a manual "In Progress" back to "Not Started"
   useEffect(() => {
     if (!weeks || !labs || !lessons || !isAuthenticated) return;
 
@@ -102,11 +107,28 @@ export default function WeeklyPlan() {
       const labKey = weekToLabKey(w.week);
       const weekLabs = labsByWeek[labKey] || [];
       const weekLessons = lessonsByWeek[labKey] || [];
-      const correctStatus = computeWeekStatus(weekLessons, weekLabs);
+      const computed = computeWeekStatus(weekLessons, weekLabs);
 
-      if (correctStatus !== w.status) {
+      let newStatus: WeekStatus | null = null;
+
+      if (computed === "Complete" && w.status !== "Complete") {
+        // All items done → always promote to Complete
+        newStatus = "Complete";
+      } else if (computed === "In Progress" && w.status === "Not Started") {
+        // First item checked → promote Not Started to In Progress
+        newStatus = "In Progress";
+      } else if (computed === "In Progress" && w.status === "Complete") {
+        // Item unchecked while Complete → demote to In Progress
+        newStatus = "In Progress";
+      } else if (computed === "Not Started" && w.status === "Complete") {
+        // All items unchecked from Complete → demote to Not Started
+        newStatus = "Not Started";
+      }
+      // Note: "In Progress" → "Not Started" is NOT auto-demoted (manual override respected)
+
+      if (newStatus) {
         syncingRef.current.add(w.id);
-        apiRequest("PATCH", `/api/weekly-plan/${w.id}`, { status: correctStatus })
+        apiRequest("PATCH", `/api/weekly-plan/${w.id}`, { status: newStatus })
           .then(() => {
             queryClient.invalidateQueries({ queryKey: ["/api/weekly-plan"] });
           })
