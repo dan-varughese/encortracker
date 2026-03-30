@@ -170,14 +170,17 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// CORS for Vercel
+// CORS — restrict to known origins
+const ALLOWED_ORIGINS = [
+  "https://encor-tracker.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:5000",
+];
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (origin) {
+  if (origin && ALLOWED_ORIGINS.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Vary", "Origin");
-  } else {
-    res.setHeader("Access-Control-Allow-Origin", "*");
   }
   res.setHeader("Access-Control-Allow-Methods", "GET,PATCH,POST,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -349,6 +352,9 @@ app.patch("/api/topics/:id", requireEditorAuth, async (req, res) => {
     const newConfidence = req.body.confidence !== undefined ? req.body.confidence : check[0].confidence;
     const newStudied = req.body.studied !== undefined ? req.body.studied : check[0].studied;
     const newNotes = req.body.notes !== undefined ? req.body.notes : check[0].notes;
+
+    if (typeof newConfidence !== "number" || newConfidence < 1 || newConfidence > 5) return res.status(400).json({ error: "Confidence must be 1-5" });
+    if (typeof newStudied !== "boolean") return res.status(400).json({ error: "Studied must be boolean" });
 
     const rows = await sql`UPDATE topics SET confidence = ${newConfidence}, studied = ${newStudied}, notes = ${newNotes} WHERE id = ${id} RETURNING *`;
     res.json(mapTopic(rows[0]));
