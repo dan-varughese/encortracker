@@ -376,10 +376,18 @@ app.post("/api/practice-tests", requireEditorAuth, async (req, res) => {
   try {
     await getDbReady();
     const { platform, date, overallScore, domainScores, notes } = req.body;
-    if (!platform || !date || typeof overallScore !== "number") {
-      return res.status(400).json({ error: "Invalid data" });
+    if (!platform || typeof platform !== "string") return res.status(400).json({ error: "Platform is required" });
+    if (!date || typeof date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return res.status(400).json({ error: "Date must be YYYY-MM-DD format" });
+    if (typeof overallScore !== "number" || overallScore < 0 || overallScore > 100) return res.status(400).json({ error: "Overall score must be 0-100" });
+    // Validate domain scores: each value must be a number 0-100
+    const validatedScores = {};
+    if (domainScores && typeof domainScores === "object") {
+      for (const [key, val] of Object.entries(domainScores)) {
+        if (typeof val !== "number" || val < 0 || val > 100) return res.status(400).json({ error: `Domain score '${key}' must be 0-100` });
+        validatedScores[key] = val;
+      }
     }
-    const ds = JSON.stringify(domainScores || {});
+    const ds = JSON.stringify(validatedScores);
     const n = notes || "";
     const rows = await sql`INSERT INTO practice_tests (platform, date, overall_score, domain_scores, notes) VALUES (${platform}, ${date}, ${overallScore}, ${ds}::jsonb, ${n}) RETURNING *`;
     res.status(201).json(mapTest(rows[0]));
