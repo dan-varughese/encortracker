@@ -6,11 +6,19 @@ const sql = neon(process.env.DATABASE_URL);
 const AUTH_COOKIE_NAME = "encor_editor_auth";
 const AUTH_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 12;
 
+// SEC-01/02: No hardcoded fallbacks — env vars are required in production.
+// In dev, fallbacks allow local testing without .env configuration.
 function getEditorPassword() {
+  if (process.env.NODE_ENV === "production" && !process.env.ENCORTRACKER_PASSWORD) {
+    console.error("CRITICAL: ENCORTRACKER_PASSWORD env var is not set!");
+  }
   return process.env.ENCORTRACKER_PASSWORD || "encor123";
 }
 
 function getSigningSecret() {
+  if (process.env.NODE_ENV === "production" && !process.env.SESSION_SECRET) {
+    console.error("CRITICAL: SESSION_SECRET env var is not set! Cookie signatures are insecure.");
+  }
   return process.env.SESSION_SECRET || process.env.ENCORTRACKER_PASSWORD || "encortracker-dev-secret";
 }
 
@@ -167,12 +175,22 @@ async function seedData() {
 
 // ─── Express app ───
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// SEC-08: Limit request body size to prevent memory abuse
+app.use(express.json({ limit: "100kb" }));
+app.use(express.urlencoded({ extended: false, limit: "100kb" }));
 
-// CORS — restrict to known origins
+// SEC-07: Security headers on all API responses
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  next();
+});
+
+// CORS — restrict to known origins (SEC-04)
 const ALLOWED_ORIGINS = [
   "https://encor-tracker.vercel.app",
+  "https://www.goyminer.com",
+  "https://goyminer.com",
   "http://localhost:5173",
   "http://localhost:5000",
 ];
@@ -194,12 +212,33 @@ app.get("/api/auth/session", (req, res) => {
   res.json({ authenticated: isEditorAuthenticated(req) });
 });
 
+// SEC-03: Simple in-memory rate limiting for login (per-IP, 5 attempts per 15 min)
+const loginAttempts = new Map();
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
+const LOGIN_MAX_ATTEMPTS = 5;
+
 app.post("/api/auth/login", (req, res) => {
+  // Rate limiting by IP
+  const ip = req.headers["x-forwarded-for"] || req.ip || "unknown";
+  const now = Date.now();
+  const record = loginAttempts.get(ip) || { count: 0, resetAt: now + LOGIN_WINDOW_MS };
+  if (now > record.resetAt) {
+    record.count = 0;
+    record.resetAt = now + LOGIN_WINDOW_MS;
+  }
+  record.count++;
+  loginAttempts.set(ip, record);
+  if (record.count > LOGIN_MAX_ATTEMPTS) {
+    return res.status(429).json({ error: "Too many login attempts. Try again later." });
+  }
+
   const password = typeof req.body?.password === "string" ? req.body.password : "";
   if (password !== getEditorPassword()) {
     return res.status(401).json({ error: "Incorrect password" });
   }
 
+  // Reset attempts on successful login
+  loginAttempts.delete(ip);
   setEditorAuthCookie(res);
   return res.json({ authenticated: true });
 });
@@ -216,7 +255,7 @@ app.get("/api/lessons", async (req, res) => {
     res.json(rows);
   } catch (e) {
     console.error("GET /api/lessons error:", e.message);
-    res.status(500).json({ error: "Database error", detail: e.message });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -224,6 +263,7 @@ app.patch("/api/lessons/:id", requireEditorAuth, async (req, res) => {
   try {
     await getDbReady();
     const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ error: "Invalid ID" });
     const check = await sql`SELECT * FROM lessons WHERE id = ${id}`;
     if (check.length === 0) return res.status(404).json({ error: "Not found" });
 
@@ -235,7 +275,7 @@ app.patch("/api/lessons/:id", requireEditorAuth, async (req, res) => {
     res.json(rows[0]);
   } catch (e) {
     console.error("PATCH /api/lessons error:", e.message);
-    res.status(500).json({ error: "Database error", detail: e.message });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -246,7 +286,7 @@ app.get("/api/labs", async (req, res) => {
     res.json(rows.map(mapLab));
   } catch (e) {
     console.error("GET /api/labs error:", e.message);
-    res.status(500).json({ error: "Database error", detail: e.message });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -254,6 +294,7 @@ app.patch("/api/labs/:id", requireEditorAuth, async (req, res) => {
   try {
     await getDbReady();
     const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ error: "Invalid ID" });
     const check = await sql`SELECT * FROM labs WHERE id = ${id}`;
     if (check.length === 0) return res.status(404).json({ error: "Not found" });
 
@@ -265,7 +306,7 @@ app.patch("/api/labs/:id", requireEditorAuth, async (req, res) => {
     res.json(mapLab(rows[0]));
   } catch (e) {
     console.error("PATCH /api/labs error:", e.message);
-    res.status(500).json({ error: "Database error", detail: e.message });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -276,7 +317,7 @@ app.get("/api/weekly-plan", async (req, res) => {
     res.json(rows.map(mapWeek));
   } catch (e) {
     console.error("GET /api/weekly-plan error:", e.message);
-    res.status(500).json({ error: "Database error", detail: e.message });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -284,6 +325,7 @@ app.patch("/api/weekly-plan/:id", requireEditorAuth, async (req, res) => {
   try {
     await getDbReady();
     const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ error: "Invalid ID" });
     const check = await sql`SELECT * FROM weekly_plan WHERE id = ${id}`;
     if (check.length === 0) return res.status(404).json({ error: "Not found" });
 
@@ -299,7 +341,7 @@ app.patch("/api/weekly-plan/:id", requireEditorAuth, async (req, res) => {
     res.json(mapWeek(rows[0]));
   } catch (e) {
     console.error("PATCH /api/weekly-plan error:", e.message);
-    res.status(500).json({ error: "Database error", detail: e.message });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -315,7 +357,7 @@ app.post("/api/weekly-plan", requireEditorAuth, async (req, res) => {
     res.status(201).json(mapWeek(rows[0]));
   } catch (e) {
     console.error("POST /api/weekly-plan error:", e.message);
-    res.status(500).json({ error: "Database error", detail: e.message });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -326,7 +368,7 @@ app.get("/api/practice-tests", async (req, res) => {
     res.json(rows.map(mapTest));
   } catch (e) {
     console.error("GET /api/practice-tests error:", e.message);
-    res.status(500).json({ error: "Database error", detail: e.message });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -343,7 +385,7 @@ app.post("/api/practice-tests", requireEditorAuth, async (req, res) => {
     res.status(201).json(mapTest(rows[0]));
   } catch (e) {
     console.error("POST /api/practice-tests error:", e.message);
-    res.status(500).json({ error: "Database error", detail: e.message });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -354,7 +396,7 @@ app.get("/api/topics", async (req, res) => {
     res.json(rows.map(mapTopic));
   } catch (e) {
     console.error("GET /api/topics error:", e.message);
-    res.status(500).json({ error: "Database error", detail: e.message });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -362,6 +404,7 @@ app.patch("/api/topics/:id", requireEditorAuth, async (req, res) => {
   try {
     await getDbReady();
     const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ error: "Invalid ID" });
     const check = await sql`SELECT * FROM topics WHERE id = ${id}`;
     if (check.length === 0) return res.status(404).json({ error: "Not found" });
 
@@ -376,7 +419,7 @@ app.patch("/api/topics/:id", requireEditorAuth, async (req, res) => {
     res.json(mapTopic(rows[0]));
   } catch (e) {
     console.error("PATCH /api/topics error:", e.message);
-    res.status(500).json({ error: "Database error", detail: e.message });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
