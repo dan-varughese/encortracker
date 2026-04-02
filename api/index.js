@@ -299,10 +299,11 @@ app.patch("/api/labs/:id", requireEditorAuth, async (req, res) => {
     if (check.length === 0) return res.status(404).json({ error: "Not found" });
 
     const newDone = req.body.done !== undefined ? req.body.done : check[0].done;
+    const newWeek = req.body.week !== undefined ? req.body.week : check[0].week;
     const newSkipped = req.body.skipped !== undefined ? req.body.skipped : (check[0].skipped || false);
     if (typeof newDone !== "boolean" || typeof newSkipped !== "boolean") return res.status(400).json({ error: "Invalid" });
 
-    const rows = await sql`UPDATE labs SET done = ${newDone}, skipped = ${newSkipped} WHERE id = ${id} RETURNING *`;
+    const rows = await sql`UPDATE labs SET done = ${newDone}, skipped = ${newSkipped}, week = ${newWeek} WHERE id = ${id} RETURNING *`;
     res.json(mapLab(rows[0]));
   } catch (e) {
     console.error("PATCH /api/labs error:", e.message);
