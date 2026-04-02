@@ -300,7 +300,6 @@ app.patch("/api/labs/:id", requireEditorAuth, async (req, res) => {
 
     const newDone = req.body.done !== undefined ? req.body.done : check[0].done;
     const newWeek = req.body.week !== undefined ? req.body.week : check[0].week;
-    const newWeek = req.body.week !== undefined ? req.body.week : check[0].week;
     const newSkipped = req.body.skipped !== undefined ? req.body.skipped : (check[0].skipped || false);
     if (typeof newDone !== "boolean" || typeof newSkipped !== "boolean") return res.status(400).json({ error: "Invalid" });
 
