@@ -43,7 +43,7 @@ export default function RedditTips() {
       <div>
         <h1 className="text-xl font-semibold tracking-tight">Reddit Tips & Wisdom</h1>
         <p className="text-sm text-muted-foreground">
-          Crowdsourced exam tips from r/ccnp — 9 sections of battle-tested advice
+          Crowdsourced exam tips from r/ccnp — 10 sections of battle-tested advice
         </p>
       </div>
 
