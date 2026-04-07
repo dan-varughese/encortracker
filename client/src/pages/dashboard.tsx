@@ -130,14 +130,14 @@ export default function Dashboard() {
       </div>
 
       {/* Cert Race Leaderboard */}
-      <Card className="bg-card border-card-border overflow-hidden">
+      <Card className="bg-[#0a0a0a] border-card-border overflow-hidden">
         <CardContent className="p-0">
           <iframe
             src="https://cert-race.vercel.app/embed"
             title="Cert Race Leaderboard"
             width="100%"
             height="180"
-            style={{ border: "none", display: "block" }}
+            style={{ border: "none", display: "block", background: "#0a0a0a" }}
           />
         </CardContent>
       </Card>
