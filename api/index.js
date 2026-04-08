@@ -312,6 +312,20 @@ app.patch("/api/labs/:id", requireEditorAuth, async (req, res) => {
   }
 });
 
+app.delete("/api/labs/:id", requireEditorAuth, async (req, res) => {
+  try {
+    await getDbReady();
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ error: "Invalid ID" });
+    const rows = await sql`DELETE FROM labs WHERE id = ${id} RETURNING id`;
+    if (rows.length === 0) return res.status(404).json({ error: "Not found" });
+    res.json({ deleted: true, id });
+  } catch (e) {
+    console.error("DELETE /api/labs error:", e.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.get("/api/weekly-plan", async (req, res) => {
   try {
     await getDbReady();
