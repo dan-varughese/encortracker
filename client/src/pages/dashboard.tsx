@@ -61,7 +61,7 @@ export default function Dashboard() {
   const totalLessons = lessons?.length ?? 74;
   const lessonPct = Math.round((watchedCount / totalLessons) * 100);
 
-  const doneLabCount = labs?.filter((l) => l.done).length ?? 0;
+  const doneLabCount = labs?.filter((l) => l.done || l.skipped).length ?? 0;
   const totalLabs = labs?.length ?? 79;
   const labPct = Math.round((doneLabCount / totalLabs) * 100);
 
