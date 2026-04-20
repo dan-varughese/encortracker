@@ -156,11 +156,23 @@ export default function WeeklyPlan() {
   }
 
   // Group labs by their week key ("Wk 1", "Wk 2", etc.)
+  // Within each week, sort CBT Nuggets labs first, preserving original order otherwise (stable).
   const labsByWeek = labs.reduce<Record<string, Lab[]>>((acc, lab) => {
     if (!acc[lab.week]) acc[lab.week] = [];
     acc[lab.week].push(lab);
     return acc;
   }, {});
+  Object.keys(labsByWeek).forEach((k) => {
+    labsByWeek[k] = labsByWeek[k]
+      .map((lab, idx) => ({ lab, idx }))
+      .sort((a, b) => {
+        const aCbt = a.lab.platform === "CBT Nuggets" ? 0 : 1;
+        const bCbt = b.lab.platform === "CBT Nuggets" ? 0 : 1;
+        if (aCbt !== bCbt) return aCbt - bCbt;
+        return a.idx - b.idx;
+      })
+      .map((x) => x.lab);
+  });
 
   // Group lessons by their week key ("Wk 1", "Wk 2", "Done", etc.)
   const lessonsByWeek = lessons.reduce<Record<string, CbtLesson[]>>((acc, lesson) => {
