@@ -83,7 +83,20 @@ export default function RedditTips() {
                             </Badge>
                           ) : null}
                           <div className="flex-1 min-w-0">
-                            <div className="font-medium text-foreground">{item.col_c}</div>
+                            <div className="font-medium text-foreground">
+                              {item.url ? (
+                                <a
+                                  href={item.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-primary hover:underline"
+                                >
+                                  {item.col_c}
+                                </a>
+                              ) : (
+                                item.col_c
+                              )}
+                            </div>
                             {item.col_d && (
                               <p className="text-xs text-muted-foreground mt-1 leading-relaxed whitespace-pre-line">
                                 {item.col_d}
