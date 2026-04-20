@@ -101,6 +101,7 @@ export interface RedditTipItem {
   col_c: string;
   col_d: string;
   col_e: string;
+  url?: string;
 }
 
 export interface RedditTip {
