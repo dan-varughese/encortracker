@@ -125,7 +125,13 @@ export default function Labs() {
 
       {/* Labs grouped by weekHeader */}
       <div className="space-y-4">
-        {Object.entries(grouped).map(([header, headerLabs]) => (
+        {Object.entries(grouped)
+        .sort(([a], [b]) => {
+          const numA = parseInt(a.match(/\d+/)?.[0] ?? "0");
+          const numB = parseInt(b.match(/\d+/)?.[0] ?? "0");
+          return numA - numB;
+        })
+        .map(([header, headerLabs]) => (
           <Card key={header} className="bg-card border-card-border">
             <CardHeader className="py-2 px-4">
               <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
