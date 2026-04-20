@@ -1961,49 +1961,57 @@
           "col_b": "\u2192",
           "col_c": "r/ccnp \u2014 Main CCNP subreddit",
           "col_d": "",
-          "col_e": ""
+          "col_e": "",
+          "url": "https://www.reddit.com/r/ccnp/"
         },
         {
           "col_b": "\u2192",
           "col_c": "ENCOR v1.1 vs v1.2 comparison (90 upvotes)",
           "col_d": "",
-          "col_e": ""
+          "col_e": "",
+          "url": "https://www.reddit.com/r/ccnp/comments/1n6vz0b/encor_v11_v12_comparison_and_differences/"
         },
         {
           "col_b": "\u2192",
           "col_c": "ENCOR 350-401 exam tips (19 upvotes, lab details)",
           "col_d": "",
-          "col_e": ""
+          "col_e": "",
+          "url": "https://www.reddit.com/r/ccnp/comments/1kz05n6/ccnp_encor_350401_exams_tips/"
         },
         {
           "col_b": "\u2192",
           "col_c": "How to study for ENCOR from CCNA-level",
           "col_d": "",
-          "col_e": ""
+          "col_e": "",
+          "url": "https://www.reddit.com/r/Cisco/comments/1pb19q6/how_to_study_for_ccnp_encorenarsifrom_a_ccnalevel/"
         },
         {
           "col_b": "\u2192",
           "col_c": "ENCOR retention strategies (Anki, active recall)",
           "col_d": "",
-          "col_e": ""
+          "col_e": "",
+          "url": "https://www.reddit.com/r/Anki/comments/rep63q/the_problem_with_active_recall_and_spaced/"
         },
         {
           "col_b": "\u2192",
           "col_c": "Cisco DevNet Sandbox (free labs)",
           "col_d": "",
-          "col_e": ""
+          "col_e": "",
+          "url": "https://developer.cisco.com/site/sandbox/"
         },
         {
           "col_b": "\u2192",
           "col_c": "The Art of Network Engineering Discord",
           "col_d": "",
-          "col_e": ""
+          "col_e": "",
+          "url": "https://artofnetworkengineering.com/tag/discord/"
         },
         {
           "col_b": "\u2192",
           "col_c": "Cisco ENCOR v1.2 Exam Topics",
           "col_d": "",
-          "col_e": ""
+          "col_e": "",
+          "url": "https://learningnetwork.cisco.com/s/encor-exam-topics"
         }
       ]
     }
