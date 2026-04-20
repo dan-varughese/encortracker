@@ -401,6 +401,19 @@ class DatabaseStorage implements IStorage {
     if (Number.parseInt(lessonCount[0]?.count || "0", 10) === 0) {
       await this.seedDatabase();
     }
+
+    // Always refresh reddit_tips content from seed (static, safe to overwrite).
+    if (this.seedData.redditTips) {
+      for (const [index, tip] of this.seedData.redditTips.entries()) {
+        await this.sql`
+          INSERT INTO reddit_tips (title, items_json, sort_order)
+          VALUES (${tip.title}, ${JSON.stringify(tip.items)}, ${index})
+          ON CONFLICT (title) DO UPDATE SET
+            items_json = EXCLUDED.items_json,
+            sort_order = EXCLUDED.sort_order
+        `;
+      }
+    }
   }
 
   private async seedDatabase() {
