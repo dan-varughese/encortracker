@@ -75,6 +75,15 @@ export default function Labs() {
     return acc;
   }, {});
 
+  // Sort labs within each week: CBT Nuggets first, then others by platform name
+  Object.keys(grouped).forEach(header => {
+    grouped[header].sort((a, b) => {
+      const aIsCBT = a.platform === "CBT Nuggets" ? 0 : 1;
+      const bIsCBT = b.platform === "CBT Nuggets" ? 0 : 1;
+      return aIsCBT - bIsCBT;
+    });
+  });
+
   return (
     <div className="p-4 md:p-6 space-y-4" data-testid="page-labs">
       <div>
