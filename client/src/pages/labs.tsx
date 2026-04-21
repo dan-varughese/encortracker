@@ -75,12 +75,13 @@ export default function Labs() {
     return acc;
   }, {});
 
-  // Sort labs within each week: CBT Nuggets first, then others by platform name
+  // Sort labs within each week: CBT Nuggets first, then by lab number
   Object.keys(grouped).forEach(header => {
     grouped[header].sort((a, b) => {
       const aIsCBT = a.platform === "CBT Nuggets" ? 0 : 1;
       const bIsCBT = b.platform === "CBT Nuggets" ? 0 : 1;
-      return aIsCBT - bIsCBT;
+      if (aIsCBT !== bIsCBT) return aIsCBT - bIsCBT;
+      return a.number - b.number;
     });
   });
 
