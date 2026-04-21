@@ -75,12 +75,15 @@ export default function Labs() {
     return acc;
   }, {});
 
-  // Sort labs within each week: CBT Nuggets first, then by lab number
+  // Sort labs within each week: CBT first, then Cisco U, then INE, then CML, then others
+  const platformOrder: Record<string, number> = {
+    "CBT Nuggets": 0, "Cisco U": 1, "INE": 2, "CML": 3,
+  };
   Object.keys(grouped).forEach(header => {
     grouped[header].sort((a, b) => {
-      const aIsCBT = a.platform === "CBT Nuggets" ? 0 : 1;
-      const bIsCBT = b.platform === "CBT Nuggets" ? 0 : 1;
-      if (aIsCBT !== bIsCBT) return aIsCBT - bIsCBT;
+      const aOrder = platformOrder[a.platform] ?? 99;
+      const bOrder = platformOrder[b.platform] ?? 99;
+      if (aOrder !== bOrder) return aOrder - bOrder;
       return a.number - b.number;
     });
   });
