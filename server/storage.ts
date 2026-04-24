@@ -5,6 +5,7 @@ import {
   type WeeklyPlan,
   type PracticeTest,
   type InsertPracticeTest,
+  type InsertWeek,
   type Topic,
   type RedditTip,
   type LessonStatus,
@@ -14,6 +15,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 type SeedLesson = {
+  id?: number;
   number: number;
   title: string;
   duration: string;
@@ -23,6 +25,7 @@ type SeedLesson = {
 };
 
 type SeedLab = {
+  id?: number;
   number: number;
   weekHeader: string;
   week: string;
@@ -30,10 +33,12 @@ type SeedLab = {
   title: string;
   practice: string;
   platform: string;
-  done: string;
+  done: string | boolean;
+  skipped?: string | boolean;
 };
 
 type SeedWeek = {
+  id?: number;
   week: string;
   dates: string;
   focus: string;
@@ -42,14 +47,17 @@ type SeedWeek = {
   labs: string;
   status: WeekStatus;
   ankiTags?: string;
+  isTravel?: boolean;
 };
 
 type SeedTopic = {
+  id?: number;
   domain: string;
   topic: string;
   subtopic?: string | null;
   confidence?: number;
   studied?: string | boolean | null;
+  cbtRef?: string | null;
   notes?: string | null;
 };
 
@@ -81,6 +89,7 @@ type DbLabRow = {
   practice: string;
   platform: string;
   done: boolean;
+  skipped: boolean;
 };
 
 type DbWeekRow = {
@@ -125,11 +134,13 @@ type DbRedditTipRow = {
 
 export interface IStorage {
   getLessons(): Promise<CbtLesson[]>;
-  updateLessonStatus(id: number, status: LessonStatus): Promise<CbtLesson | undefined>;
+  updateLesson(id: number, updates: { status?: LessonStatus; week?: string }): Promise<CbtLesson | undefined>;
   getLabs(): Promise<Lab[]>;
-  updateLabDone(id: number, done: boolean): Promise<Lab | undefined>;
+  updateLab(id: number, updates: { done?: boolean; skipped?: boolean; week?: string; weekHeader?: string }): Promise<Lab | undefined>;
+  deleteLab(id: number): Promise<boolean>;
   getWeeklyPlan(): Promise<WeeklyPlan[]>;
-  updateWeekStatus(id: number, status: WeekStatus): Promise<WeeklyPlan | undefined>;
+  updateWeek(id: number, updates: { status?: WeekStatus; cbtLessons?: string; otherStudy?: string; labs?: string; focus?: string; isTravel?: boolean }): Promise<WeeklyPlan | undefined>;
+  createWeek(week: InsertWeek): Promise<WeeklyPlan>;
   getPracticeTests(): Promise<PracticeTest[]>;
   createPracticeTest(test: InsertPracticeTest): Promise<PracticeTest>;
   getTopics(): Promise<Topic[]>;
@@ -163,6 +174,33 @@ function loadSeedData(): SeedData {
   throw new Error("Could not find study_plan_data.json");
 }
 
+function isDurationLike(value: string) {
+  return /\b(MINS?|HRS?|HR)\b/i.test(value);
+}
+
+function normalizeSeedLesson(lesson: SeedLesson) {
+  const duration = isDurationLike(lesson.duration) ? lesson.duration : lesson.domain;
+  const domain = isDurationLike(lesson.duration) ? lesson.domain : lesson.duration;
+  return { duration, domain };
+}
+
+function seedDone(value: string | boolean | undefined) {
+  return value === true || value === "Done";
+}
+
+function seedSkipped(value: string | boolean | undefined) {
+  return value === true || value === "Skipped";
+}
+
+function topicStudied(value: string | boolean | null | undefined) {
+  return typeof value === "boolean" ? value : typeof value === "string" && value.length > 0;
+}
+
+function topicCbtRef(topic: SeedTopic) {
+  if (topic.cbtRef !== undefined) return topic.cbtRef;
+  return typeof topic.studied === "string" ? topic.studied : null;
+}
+
 export class MemStorage implements IStorage {
   private lessons: Map<number, CbtLesson> = new Map();
   private labs: Map<number, Lab> = new Map();
@@ -179,13 +217,14 @@ export class MemStorage implements IStorage {
   private seedData(data: SeedData) {
     if (data.cbtLessons) {
       data.cbtLessons.forEach((lesson, index) => {
-        const id = index + 1;
+        const id = lesson.id ?? index + 1;
+        const { duration, domain } = normalizeSeedLesson(lesson);
         this.lessons.set(id, {
           id,
           number: lesson.number,
           title: lesson.title,
-          duration: lesson.domain,
-          domain: lesson.duration,
+          duration,
+          domain,
           week: lesson.week,
           status: lesson.status,
         });
@@ -194,7 +233,7 @@ export class MemStorage implements IStorage {
 
     if (data.labs) {
       data.labs.forEach((lab, index) => {
-        const id = index + 1;
+        const id = lab.id ?? index + 1;
         this.labs.set(id, {
           id,
           number: lab.number,
@@ -204,14 +243,15 @@ export class MemStorage implements IStorage {
           title: lab.title,
           practice: lab.practice,
           platform: lab.platform,
-          done: lab.done === "Done",
+          done: seedDone(lab.done),
+          skipped: seedSkipped(lab.skipped),
         });
       });
     }
 
     if (data.weeklyPlan) {
       data.weeklyPlan.forEach((week, index) => {
-        const id = index + 1;
+        const id = week.id ?? index + 1;
         this.weeklyPlan.set(id, {
           id,
           week: week.week,
@@ -222,7 +262,7 @@ export class MemStorage implements IStorage {
           labs: week.labs,
           status: week.status,
           ankiTags: week.ankiTags || "",
-          isTravel: week.focus.toUpperCase().includes("TRAVEL"),
+          isTravel: week.isTravel ?? week.focus.toUpperCase().includes("TRAVEL"),
         });
       });
     }
@@ -231,15 +271,15 @@ export class MemStorage implements IStorage {
       let topicId = 0;
       data.topics.forEach((topic) => {
         if (topic.domain === "Topic #") return;
-        topicId += 1;
+        topicId = topic.id ?? topicId + 1;
         this.topics.set(topicId, {
           id: topicId,
           domain: topic.domain,
           topic: topic.topic,
           subtopic: topic.subtopic || null,
           confidence: typeof topic.confidence === "number" ? topic.confidence : 1,
-          studied: typeof topic.studied === "string" && topic.studied.length > 0,
-          cbtRef: typeof topic.studied === "string" ? topic.studied : null,
+          studied: topicStudied(topic.studied),
+          cbtRef: topicCbtRef(topic),
           notes: topic.notes || null,
         });
       });
@@ -252,10 +292,11 @@ export class MemStorage implements IStorage {
     return Array.from(this.lessons.values()).sort((a, b) => a.number - b.number);
   }
 
-  async updateLessonStatus(id: number, status: LessonStatus) {
+  async updateLesson(id: number, updates: { status?: LessonStatus; week?: string }) {
     const lesson = this.lessons.get(id);
     if (!lesson) return undefined;
-    lesson.status = status;
+    if (updates.status !== undefined) lesson.status = updates.status;
+    if (updates.week !== undefined) lesson.week = updates.week;
     return lesson;
   }
 
@@ -263,22 +304,52 @@ export class MemStorage implements IStorage {
     return Array.from(this.labs.values()).sort((a, b) => a.number - b.number);
   }
 
-  async updateLabDone(id: number, done: boolean) {
+  async updateLab(id: number, updates: { done?: boolean; skipped?: boolean; week?: string; weekHeader?: string }) {
     const lab = this.labs.get(id);
     if (!lab) return undefined;
-    lab.done = done;
+    if (updates.done !== undefined) lab.done = updates.done;
+    if (updates.skipped !== undefined) lab.skipped = updates.skipped;
+    if (updates.week !== undefined) lab.week = updates.week;
+    if (updates.weekHeader !== undefined) lab.weekHeader = updates.weekHeader;
     return lab;
+  }
+
+  async deleteLab(id: number) {
+    return this.labs.delete(id);
   }
 
   async getWeeklyPlan() {
     return Array.from(this.weeklyPlan.values()).sort((a, b) => a.id - b.id);
   }
 
-  async updateWeekStatus(id: number, status: WeekStatus) {
+  async updateWeek(id: number, updates: { status?: WeekStatus; cbtLessons?: string; otherStudy?: string; labs?: string; focus?: string; isTravel?: boolean }) {
     const week = this.weeklyPlan.get(id);
     if (!week) return undefined;
-    week.status = status;
+    if (updates.status !== undefined) week.status = updates.status;
+    if (updates.cbtLessons !== undefined) week.cbtLessons = updates.cbtLessons;
+    if (updates.otherStudy !== undefined) week.otherStudy = updates.otherStudy;
+    if (updates.labs !== undefined) week.labs = updates.labs;
+    if (updates.focus !== undefined) week.focus = updates.focus;
+    if (updates.isTravel !== undefined) week.isTravel = updates.isTravel;
     return week;
+  }
+
+  async createWeek(week: InsertWeek) {
+    const id = Math.max(0, ...this.weeklyPlan.keys()) + 1;
+    const nextWeek: WeeklyPlan = {
+      id,
+      week: week.week,
+      dates: week.dates,
+      focus: week.focus,
+      cbtLessons: week.cbtLessons,
+      otherStudy: week.otherStudy,
+      labs: week.labs,
+      status: "Not Started",
+      ankiTags: week.ankiTags,
+      isTravel: week.focus.toUpperCase().includes("TRAVEL"),
+    };
+    this.weeklyPlan.set(id, nextWeek);
+    return nextWeek;
   }
 
   async getPracticeTests() {
@@ -349,9 +420,11 @@ class DatabaseStorage implements IStorage {
         title TEXT NOT NULL,
         practice TEXT NOT NULL,
         platform TEXT NOT NULL,
-        done BOOLEAN NOT NULL DEFAULT false
+        done BOOLEAN NOT NULL DEFAULT false,
+        skipped BOOLEAN NOT NULL DEFAULT false
       )
     `;
+    await this.sql`ALTER TABLE labs ADD COLUMN IF NOT EXISTS skipped BOOLEAN NOT NULL DEFAULT false`;
     await this.sql`
       CREATE TABLE IF NOT EXISTS weekly_plan (
         id INT PRIMARY KEY,
@@ -419,9 +492,10 @@ class DatabaseStorage implements IStorage {
   private async seedDatabase() {
     if (this.seedData.cbtLessons) {
       for (const [index, lesson] of this.seedData.cbtLessons.entries()) {
+        const { duration, domain } = normalizeSeedLesson(lesson);
         await this.sql`
           INSERT INTO lessons (id, number, title, duration, domain, week, status)
-          VALUES (${index + 1}, ${lesson.number}, ${lesson.title}, ${lesson.domain}, ${lesson.duration}, ${lesson.week}, ${lesson.status})
+          VALUES (${lesson.id ?? index + 1}, ${lesson.number}, ${lesson.title}, ${duration}, ${domain}, ${lesson.week}, ${lesson.status})
         `;
       }
     }
@@ -429,8 +503,8 @@ class DatabaseStorage implements IStorage {
     if (this.seedData.labs) {
       for (const [index, lab] of this.seedData.labs.entries()) {
         await this.sql`
-          INSERT INTO labs (id, number, week_header, week, domain, title, practice, platform, done)
-          VALUES (${index + 1}, ${lab.number}, ${lab.weekHeader}, ${lab.week}, ${lab.domain}, ${lab.title}, ${lab.practice}, ${lab.platform}, ${lab.done === "Done"})
+          INSERT INTO labs (id, number, week_header, week, domain, title, practice, platform, done, skipped)
+          VALUES (${lab.id ?? index + 1}, ${lab.number}, ${lab.weekHeader}, ${lab.week}, ${lab.domain}, ${lab.title}, ${lab.practice}, ${lab.platform}, ${seedDone(lab.done)}, ${seedSkipped(lab.skipped)})
         `;
       }
     }
@@ -440,7 +514,7 @@ class DatabaseStorage implements IStorage {
         await this.sql`
           INSERT INTO weekly_plan (id, week, dates, focus, cbt_lessons, other_study, labs_desc, status, anki_tags, is_travel)
           VALUES (
-            ${index + 1},
+            ${week.id ?? index + 1},
             ${week.week},
             ${week.dates},
             ${week.focus},
@@ -449,7 +523,7 @@ class DatabaseStorage implements IStorage {
             ${week.labs},
             ${week.status},
             ${week.ankiTags || ""},
-            ${week.focus.toUpperCase().includes("TRAVEL")}
+            ${week.isTravel ?? week.focus.toUpperCase().includes("TRAVEL")}
           )
         `;
       }
@@ -459,9 +533,7 @@ class DatabaseStorage implements IStorage {
       let topicId = 0;
       for (const topic of this.seedData.topics) {
         if (topic.domain === "Topic #") continue;
-        topicId += 1;
-        const studied = typeof topic.studied === "string" && topic.studied.length > 0;
-        const cbtRef = typeof topic.studied === "string" ? topic.studied : null;
+        topicId = topic.id ?? topicId + 1;
         await this.sql`
           INSERT INTO topics (id, domain, topic, subtopic, confidence, studied, cbt_ref, notes)
           VALUES (
@@ -470,8 +542,8 @@ class DatabaseStorage implements IStorage {
             ${topic.topic},
             ${topic.subtopic || null},
             ${typeof topic.confidence === "number" ? topic.confidence : 1},
-            ${studied},
-            ${cbtRef},
+            ${topicStudied(topic.studied)},
+            ${topicCbtRef(topic)},
             ${topic.notes || null}
           )
         `;
@@ -494,11 +566,16 @@ class DatabaseStorage implements IStorage {
     return rows;
   }
 
-  async updateLessonStatus(id: number, status: LessonStatus) {
+  async updateLesson(id: number, updates: { status?: LessonStatus; week?: string }) {
     await this.ready();
+    const existingRows = (await this.sql`SELECT * FROM lessons WHERE id = ${id}`) as unknown as DbLessonRow[];
+    const existing = existingRows[0];
+    if (!existing) return undefined;
+
     const rows = (await this.sql`
       UPDATE lessons
-      SET status = ${status}
+      SET status = ${updates.status ?? existing.status},
+          week = ${updates.week ?? existing.week}
       WHERE id = ${id}
       RETURNING *
     `) as unknown as DbLessonRow[];
@@ -511,15 +588,28 @@ class DatabaseStorage implements IStorage {
     return rows.map(mapLabRow);
   }
 
-  async updateLabDone(id: number, done: boolean) {
+  async updateLab(id: number, updates: { done?: boolean; skipped?: boolean; week?: string; weekHeader?: string }) {
     await this.ready();
+    const existingRows = (await this.sql`SELECT * FROM labs WHERE id = ${id}`) as unknown as DbLabRow[];
+    const existing = existingRows[0];
+    if (!existing) return undefined;
+
     const rows = (await this.sql`
       UPDATE labs
-      SET done = ${done}
+      SET done = ${updates.done ?? existing.done},
+          skipped = ${updates.skipped ?? existing.skipped},
+          week = ${updates.week ?? existing.week},
+          week_header = ${updates.weekHeader ?? existing.week_header}
       WHERE id = ${id}
       RETURNING *
     `) as unknown as DbLabRow[];
     return rows[0] ? mapLabRow(rows[0]) : undefined;
+  }
+
+  async deleteLab(id: number) {
+    await this.ready();
+    const rows = (await this.sql`DELETE FROM labs WHERE id = ${id} RETURNING id`) as unknown as Array<{ id: number }>;
+    return rows.length > 0;
   }
 
   async getWeeklyPlan() {
@@ -528,15 +618,47 @@ class DatabaseStorage implements IStorage {
     return rows.map(mapWeekRow);
   }
 
-  async updateWeekStatus(id: number, status: WeekStatus) {
+  async updateWeek(id: number, updates: { status?: WeekStatus; cbtLessons?: string; otherStudy?: string; labs?: string; focus?: string; isTravel?: boolean }) {
     await this.ready();
+    const existingRows = (await this.sql`SELECT * FROM weekly_plan WHERE id = ${id}`) as unknown as DbWeekRow[];
+    const existing = existingRows[0];
+    if (!existing) return undefined;
+
     const rows = (await this.sql`
       UPDATE weekly_plan
-      SET status = ${status}
+      SET status = ${updates.status ?? existing.status},
+          cbt_lessons = ${updates.cbtLessons ?? existing.cbt_lessons},
+          other_study = ${updates.otherStudy ?? existing.other_study},
+          labs_desc = ${updates.labs ?? existing.labs_desc},
+          focus = ${updates.focus ?? existing.focus},
+          is_travel = ${updates.isTravel ?? existing.is_travel}
       WHERE id = ${id}
       RETURNING *
     `) as unknown as DbWeekRow[];
     return rows[0] ? mapWeekRow(rows[0]) : undefined;
+  }
+
+  async createWeek(week: InsertWeek) {
+    await this.ready();
+    const maxRows = (await this.sql`SELECT COALESCE(MAX(id), 0)::text AS max_id FROM weekly_plan`) as unknown as Array<{ max_id: string }>;
+    const id = Number.parseInt(maxRows[0]?.max_id || "0", 10) + 1;
+    const rows = (await this.sql`
+      INSERT INTO weekly_plan (id, week, dates, focus, cbt_lessons, other_study, labs_desc, status, anki_tags, is_travel)
+      VALUES (
+        ${id},
+        ${week.week},
+        ${week.dates},
+        ${week.focus},
+        ${week.cbtLessons},
+        ${week.otherStudy},
+        ${week.labs},
+        ${"Not Started"},
+        ${week.ankiTags},
+        ${week.focus.toUpperCase().includes("TRAVEL")}
+      )
+      RETURNING *
+    `) as unknown as DbWeekRow[];
+    return mapWeekRow(rows[0]);
   }
 
   async getPracticeTests() {
@@ -602,6 +724,7 @@ function mapLabRow(row: DbLabRow): Lab {
     practice: row.practice,
     platform: row.platform,
     done: row.done,
+    skipped: row.skipped,
   };
 }
 

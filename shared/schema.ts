@@ -15,7 +15,10 @@ export interface CbtLesson {
 }
 
 export const updateLessonSchema = z.object({
-  status: lessonStatusEnum,
+  status: lessonStatusEnum.optional(),
+  week: z.string().optional(),
+}).refine((data) => data.status !== undefined || data.week !== undefined, {
+  message: "At least one lesson field is required",
 });
 
 // ─── Labs ────────────────────────────────────────────────
@@ -33,8 +36,18 @@ export interface Lab {
 }
 
 export const updateLabSchema = z.object({
-  done: z.boolean(),
-});
+  done: z.boolean().optional(),
+  skipped: z.boolean().optional(),
+  week: z.string().optional(),
+  weekHeader: z.string().optional(),
+}).refine(
+  (data) =>
+    data.done !== undefined ||
+    data.skipped !== undefined ||
+    data.week !== undefined ||
+    data.weekHeader !== undefined,
+  { message: "At least one lab field is required" },
+);
 
 // ─── Weekly Plan ─────────────────────────────────────────
 export const weekStatusEnum = z.enum(["Not Started", "In Progress", "Complete"]);
@@ -54,8 +67,34 @@ export interface WeeklyPlan {
 }
 
 export const updateWeekSchema = z.object({
-  status: weekStatusEnum,
+  status: weekStatusEnum.optional(),
+  cbtLessons: z.string().optional(),
+  otherStudy: z.string().optional(),
+  labs: z.string().optional(),
+  focus: z.string().optional(),
+  isTravel: z.boolean().optional(),
+}).refine(
+  (data) =>
+    data.status !== undefined ||
+    data.cbtLessons !== undefined ||
+    data.otherStudy !== undefined ||
+    data.labs !== undefined ||
+    data.focus !== undefined ||
+    data.isTravel !== undefined,
+  { message: "At least one week field is required" },
+);
+
+export const insertWeekSchema = z.object({
+  week: z.string().min(1),
+  dates: z.string().min(1),
+  focus: z.string().default(""),
+  cbtLessons: z.string().default(""),
+  otherStudy: z.string().default(""),
+  labs: z.string().default(""),
+  ankiTags: z.string().default(""),
 });
+
+export type InsertWeek = z.infer<typeof insertWeekSchema>;
 
 // ─── Practice Tests ──────────────────────────────────────
 export interface PracticeTest {

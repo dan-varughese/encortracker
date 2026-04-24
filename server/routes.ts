@@ -11,6 +11,7 @@ import {
   updateLessonSchema,
   updateLabSchema,
   updateWeekSchema,
+  insertWeekSchema,
   insertPracticeTestSchema,
   updateTopicSchema,
 } from "@shared/schema";
@@ -65,7 +66,7 @@ export async function registerRoutes(
     if (!parsed.success) {
       return res.status(400).json({ error: parsed.error.message });
     }
-    const updated = await storage.updateLessonStatus(id, parsed.data.status);
+    const updated = await storage.updateLesson(id, parsed.data);
     if (!updated) return res.status(404).json({ error: "Lesson not found" });
     res.json(updated);
   });
@@ -83,9 +84,17 @@ export async function registerRoutes(
     if (!parsed.success) {
       return res.status(400).json({ error: parsed.error.message });
     }
-    const updated = await storage.updateLabDone(id, parsed.data.done);
+    const updated = await storage.updateLab(id, parsed.data);
     if (!updated) return res.status(404).json({ error: "Lab not found" });
     res.json(updated);
+  });
+
+  app.delete("/api/labs/:id", requireEditorAuth, async (req, res) => {
+    const id = parseNumericId(req.params.id);
+    if (id === null) return res.status(400).json({ error: "Invalid lab id" });
+    const deleted = await storage.deleteLab(id);
+    if (!deleted) return res.status(404).json({ error: "Lab not found" });
+    res.json({ deleted: true, id });
   });
 
   // ─── Weekly Plan ──────────────────────────────────────
@@ -101,9 +110,18 @@ export async function registerRoutes(
     if (!parsed.success) {
       return res.status(400).json({ error: parsed.error.message });
     }
-    const updated = await storage.updateWeekStatus(id, parsed.data.status);
+    const updated = await storage.updateWeek(id, parsed.data);
     if (!updated) return res.status(404).json({ error: "Week not found" });
     res.json(updated);
+  });
+
+  app.post("/api/weekly-plan", requireEditorAuth, async (req, res) => {
+    const parsed = insertWeekSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: parsed.error.message });
+    }
+    const week = await storage.createWeek(parsed.data);
+    res.status(201).json(week);
   });
 
   // ─── Practice Tests ───────────────────────────────────
