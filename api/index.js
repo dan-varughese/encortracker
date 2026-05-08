@@ -1,10 +1,42 @@
 const express = require("express");
-const { neon } = require("@neondatabase/serverless");
+const { Pool } = require("pg");
 const { createHmac, timingSafeEqual } = require("crypto");
 
-const sql = neon(process.env.DATABASE_URL);
+const DATABASE_URL =
+  process.env.POSTGRES_URL_NON_POOLING ||
+  process.env.DATABASE_URL_UNPOOLED ||
+  process.env.DATABASE_URL;
+const pool = DATABASE_URL
+  ? new Pool({
+      connectionString: DATABASE_URL,
+      max: 1,
+      idleTimeoutMillis: 5_000,
+      connectionTimeoutMillis: 8_000,
+    })
+  : null;
 const AUTH_COOKIE_NAME = "encor_editor_auth";
 const AUTH_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 12;
+
+async function sql(strings, ...values) {
+  if (!pool) {
+    throw new Error("Database connection string is not configured");
+  }
+
+  const text = strings.reduce((query, chunk, index) => {
+    return query + chunk + (index < values.length ? `$${index + 1}` : "");
+  }, "");
+  const result = await pool.query(text, values);
+  return result.rows;
+}
+
+sql.query = async function query(text, values) {
+  if (!pool) {
+    throw new Error("Database connection string is not configured");
+  }
+
+  const result = await pool.query(text, values);
+  return result.rows;
+};
 
 // SEC-01/02: No hardcoded fallbacks — env vars are required in production.
 // In dev, fallbacks allow local testing without .env configuration.
@@ -134,6 +166,10 @@ function esc(v) {
 // ─── Database initialization ───
 let _dbReadyPromise = null;
 function getDbReady() {
+  if (!pool) {
+    return Promise.reject(new Error("Database connection string is not configured"));
+  }
+
   if (!_dbReadyPromise) {
     _dbReadyPromise = initDb().catch(e => {
       console.error("DB init failed:", e.message);
