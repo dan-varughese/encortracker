@@ -416,7 +416,8 @@ app.patch("/api/weekly-plan/:id", requireEditorAuth, async (req, res) => {
     const newIsTravel = req.body.isTravel !== undefined ? req.body.isTravel : check[0].is_travel;
     if (req.body.status !== undefined && !validateWeekStatus(newStatus)) return res.status(400).json({ error: "Invalid status" });
 
-    const rows = await sql`UPDATE weekly_plan SET status = ${newStatus}, cbt_lessons = ${newCbtLessons}, other_study = ${newOtherStudy}, labs_desc = ${newLabs}, focus = ${newFocus}, is_travel = ${newIsTravel} WHERE id = ${id} RETURNING *`;
+    const newDates = req.body.dates !== undefined ? req.body.dates : check[0].dates;
+    const rows = await sql`UPDATE weekly_plan SET status = ${newStatus}, cbt_lessons = ${newCbtLessons}, other_study = ${newOtherStudy}, labs_desc = ${newLabs}, focus = ${newFocus}, is_travel = ${newIsTravel}, dates = ${newDates} WHERE id = ${id} RETURNING *`;
     res.json(mapWeek(rows[0]));
   } catch (e) {
     console.error("PATCH /api/weekly-plan error:", e.message);
