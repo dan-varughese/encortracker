@@ -36,7 +36,7 @@ const DOMAIN_COLORS: Record<string, string> = {
 };
 
 function getDaysUntilDeadline(): number {
-  const deadline = new Date("2026-06-06");
+  const deadline = new Date("2026-06-13");
   const now = new Date();
   return Math.max(0, Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
 }
@@ -124,7 +124,7 @@ export default function Dashboard() {
           icon={<Clock className="h-4 w-4 text-red-400" />}
           label="Days to Deadline"
           value={getDaysUntilDeadline().toString()}
-          sub="June 6, 2026"
+          sub="June 13, 2026"
           testId="stat-deadline"
         />
       </div>
