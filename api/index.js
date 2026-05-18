@@ -41,26 +41,34 @@ sql.query = async function query(text, values) {
 // SEC-01/02: No hardcoded fallbacks — env vars are required in production.
 // In dev, fallbacks allow local testing without .env configuration.
 function getEditorPassword() {
-  if (process.env.NODE_ENV === "production" && !process.env.ENCORTRACKER_PASSWORD) {
+  const password = process.env.ENCORTRACKER_PASSWORD;
+  if (process.env.NODE_ENV === "production" && !password) {
     console.error("CRITICAL: ENCORTRACKER_PASSWORD env var is not set!");
+    return null;
   }
-  return process.env.ENCORTRACKER_PASSWORD || "encor123";
+  return password || "encor123";
 }
 
 function getSigningSecret() {
-  if (process.env.NODE_ENV === "production" && !process.env.SESSION_SECRET) {
+  const secret = process.env.SESSION_SECRET || process.env.ENCORTRACKER_PASSWORD;
+  if (process.env.NODE_ENV === "production" && !secret) {
     console.error("CRITICAL: SESSION_SECRET env var is not set! Cookie signatures are insecure.");
+    return null;
   }
-  return process.env.SESSION_SECRET || process.env.ENCORTRACKER_PASSWORD || "encortracker-dev-secret";
+  return secret || "encortracker-dev-secret";
 }
 
 function signValue(value) {
-  return createHmac("sha256", getSigningSecret()).update(value).digest("hex");
+  const secret = getSigningSecret();
+  if (!secret) return null;
+  return createHmac("sha256", secret).update(value).digest("hex");
 }
 
 function buildCookieValue() {
   const payload = "editor";
-  return `${payload}.${signValue(payload)}`;
+  const signature = signValue(payload);
+  if (!signature) return null;
+  return `${payload}.${signature}`;
 }
 
 function parseCookies(req) {
@@ -80,6 +88,7 @@ function isEditorAuthenticated(req) {
   const [payload, signature] = value.split(".");
   if (!payload || !signature) return false;
   const expected = signValue(payload);
+  if (!expected) return false;
   const actualBuffer = Buffer.from(signature);
   const expectedBuffer = Buffer.from(expected);
   if (actualBuffer.length !== expectedBuffer.length) return false;
@@ -87,9 +96,11 @@ function isEditorAuthenticated(req) {
 }
 
 function setEditorAuthCookie(res) {
+  const cookieValue = buildCookieValue();
+  if (!cookieValue) return false;
   const secure = process.env.NODE_ENV === "production";
   const parts = [
-    `${AUTH_COOKIE_NAME}=${encodeURIComponent(buildCookieValue())}`,
+    `${AUTH_COOKIE_NAME}=${encodeURIComponent(cookieValue)}`,
     "Path=/",
     "HttpOnly",
     "SameSite=Lax",
@@ -97,6 +108,7 @@ function setEditorAuthCookie(res) {
   ];
   if (secure) parts.push("Secure");
   res.setHeader("Set-Cookie", parts.join("; "));
+  return true;
 }
 
 function clearEditorAuthCookie(res) {
@@ -280,9 +292,22 @@ const loginAttempts = new Map();
 const LOGIN_WINDOW_MS = 15 * 60 * 1000;
 const LOGIN_MAX_ATTEMPTS = 5;
 
+function getClientIp(req) {
+  const forwardedHeader = req.headers["x-forwarded-for"];
+  const forwarded = Array.isArray(forwardedHeader)
+    ? forwardedHeader[forwardedHeader.length - 1]
+    : forwardedHeader;
+  if (typeof forwarded === "string" && forwarded.trim()) {
+    const parts = forwarded.split(",").map(part => part.trim()).filter(Boolean);
+    const lastHop = parts[parts.length - 1];
+    if (lastHop && /^[a-fA-F0-9:.]+$/.test(lastHop)) return lastHop;
+  }
+  return req.ip || req.socket?.remoteAddress || "unknown";
+}
+
 app.post("/api/auth/login", (req, res) => {
   // Rate limiting by IP
-  const ip = req.headers["x-forwarded-for"] || req.ip || "unknown";
+  const ip = getClientIp(req);
   const now = Date.now();
   const record = loginAttempts.get(ip) || { count: 0, resetAt: now + LOGIN_WINDOW_MS };
   if (now > record.resetAt) {
@@ -296,13 +321,19 @@ app.post("/api/auth/login", (req, res) => {
   }
 
   const password = typeof req.body?.password === "string" ? req.body.password : "";
-  if (password !== getEditorPassword()) {
+  const expectedPassword = getEditorPassword();
+  if (!expectedPassword) {
+    return res.status(503).json({ error: "Editor authentication is not configured" });
+  }
+  if (password !== expectedPassword) {
     return res.status(401).json({ error: "Incorrect password" });
   }
 
   // Reset attempts on successful login
   loginAttempts.delete(ip);
-  setEditorAuthCookie(res);
+  if (!setEditorAuthCookie(res)) {
+    return res.status(503).json({ error: "Editor authentication is not configured" });
+  }
   return res.json({ authenticated: true });
 });
 

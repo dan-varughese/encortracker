@@ -30,6 +30,23 @@ function parseNumericId(rawId: string | string[]) {
   return Number.isFinite(id) ? id : null;
 }
 
+const loginAttempts = new Map<string, { count: number; resetAt: number }>();
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
+const LOGIN_MAX_ATTEMPTS = 5;
+
+function getClientIp(req: Request) {
+  const forwardedHeader = req.headers["x-forwarded-for"];
+  const forwarded = Array.isArray(forwardedHeader)
+    ? forwardedHeader[forwardedHeader.length - 1]
+    : forwardedHeader;
+  if (typeof forwarded === "string" && forwarded.trim()) {
+    const parts = forwarded.split(",").map((part) => part.trim()).filter(Boolean);
+    const lastHop = parts[parts.length - 1];
+    if (lastHop && /^[a-fA-F0-9:.]+$/.test(lastHop)) return lastHop;
+  }
+  return req.ip || req.socket.remoteAddress || "unknown";
+}
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -39,12 +56,32 @@ export async function registerRoutes(
   });
 
   app.post("/api/auth/login", (req, res) => {
+    const ip = getClientIp(req);
+    const now = Date.now();
+    const record = loginAttempts.get(ip) || { count: 0, resetAt: now + LOGIN_WINDOW_MS };
+    if (now > record.resetAt) {
+      record.count = 0;
+      record.resetAt = now + LOGIN_WINDOW_MS;
+    }
+    record.count++;
+    loginAttempts.set(ip, record);
+    if (record.count > LOGIN_MAX_ATTEMPTS) {
+      return res.status(429).json({ error: "Too many login attempts. Try again later." });
+    }
+
     const password = typeof req.body?.password === "string" ? req.body.password : "";
-    if (password !== getEditorPassword()) {
+    const expectedPassword = getEditorPassword();
+    if (!expectedPassword) {
+      return res.status(503).json({ error: "Editor authentication is not configured" });
+    }
+    if (password !== expectedPassword) {
       return res.status(401).json({ error: "Incorrect password" });
     }
 
-    setEditorAuthCookie(res);
+    loginAttempts.delete(ip);
+    if (!setEditorAuthCookie(res)) {
+      return res.status(503).json({ error: "Editor authentication is not configured" });
+    }
     return res.json({ authenticated: true });
   });
 

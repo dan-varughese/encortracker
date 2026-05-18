@@ -5,20 +5,34 @@ const AUTH_COOKIE_NAME = "encor_editor_auth";
 const AUTH_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 12;
 
 function getSigningSecret() {
-  return process.env.SESSION_SECRET || process.env.ENCORTRACKER_PASSWORD || "encortracker-dev-secret";
+  const secret = process.env.SESSION_SECRET || process.env.ENCORTRACKER_PASSWORD;
+  if (process.env.NODE_ENV === "production" && !secret) {
+    console.error("CRITICAL: SESSION_SECRET env var is not set! Cookie signatures are insecure.");
+    return null;
+  }
+  return secret || "encortracker-dev-secret";
 }
 
 export function getEditorPassword() {
-  return process.env.ENCORTRACKER_PASSWORD || "encor123";
+  const password = process.env.ENCORTRACKER_PASSWORD;
+  if (process.env.NODE_ENV === "production" && !password) {
+    console.error("CRITICAL: ENCORTRACKER_PASSWORD env var is not set!");
+    return null;
+  }
+  return password || "encor123";
 }
 
 function signValue(value: string) {
-  return createHmac("sha256", getSigningSecret()).update(value).digest("hex");
+  const secret = getSigningSecret();
+  if (!secret) return null;
+  return createHmac("sha256", secret).update(value).digest("hex");
 }
 
 function buildCookieValue() {
   const payload = "editor";
-  return `${payload}.${signValue(payload)}`;
+  const signature = signValue(payload);
+  if (!signature) return null;
+  return `${payload}.${signature}`;
 }
 
 function parseCookies(req: Request) {
@@ -41,6 +55,7 @@ export function isEditorAuthenticated(req: Request) {
   if (!payload || !signature) return false;
 
   const expectedSignature = signValue(payload);
+  if (!expectedSignature) return false;
   const actualBuffer = Buffer.from(signature);
   const expectedBuffer = Buffer.from(expectedSignature);
 
@@ -52,13 +67,17 @@ export function isEditorAuthenticated(req: Request) {
 }
 
 export function setEditorAuthCookie(res: Response) {
-  res.cookie(AUTH_COOKIE_NAME, buildCookieValue(), {
+  const cookieValue = buildCookieValue();
+  if (!cookieValue) return false;
+
+  res.cookie(AUTH_COOKIE_NAME, cookieValue, {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
     maxAge: AUTH_COOKIE_MAX_AGE_SECONDS * 1000,
   });
+  return true;
 }
 
 export function clearEditorAuthCookie(res: Response) {
