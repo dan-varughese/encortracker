@@ -2285,14 +2285,14 @@
           "col_b": "LABS",
           "col_c": "Same 6 lab topics, but with configuration variants",
           "col_d": "OSPF Summarization now uses \"network\" command (not just interface-level). NetFlow lab may ask about exporter config instead of applying monitor. LACP lab requires removing \"switchport access vlan\" from trunk interfaces. Know BOTH approaches for every lab.",
-          "col_e": "DigitalTut v1.2 experience"
+          "col_e": "March–April 2026 community reports"
         },
         {
           "col_a": null,
           "col_b": "LABS",
           "col_c": "The 6 confirmed lab topics for v1.2",
           "col_d": "1) EtherChannel/LACP + STP Root Bridge\n2) Multi-area OSPF + Summarization\n3) eBGP + Subnetting (many loopbacks)\n4) VRF + Tunnel + NetFlow + IP SLA + Local SPAN\n5) ACL (fix without deleting) + CoPP\n6) NetFlow (exporter or monitor variant)\n\nTip: \"I got all my labs done in 30 minutes and had 1:30 for MCQs.\" Speed comes from muscle memory.",
-          "col_e": "r/ccnp + DigitalTut v1.2 reports"
+          "col_e": "r/ccnp + March–April 2026 community reports"
         },
         {
           "col_a": null,
@@ -2327,7 +2327,7 @@
           "col_b": "STRATEGY",
           "col_c": "Labs carry you — ace them and you can miss MCQs",
           "col_d": "\"If you absolutely ace the labs, you are going to be fine getting some multiple choice questions incorrect.\" Labs are weighted heavily. One taker passed despite low Architecture, Security, and Automation MCQ scores because labs carried.",
-          "col_e": "DigitalTut v1.2 experience (FS3851)"
+          "col_e": "March–April 2026 community report"
         },
         {
           "col_a": null,
@@ -2340,15 +2340,15 @@
           "col_a": null,
           "col_b": "MULTICAST",
           "col_c": "Multicast is light (for now) despite expanded blueprint",
-          "col_d": "Only ~1 conceptual multicast question reported per taker. \"Which PIM mode transmits a prune message?\" level. BiDir PIM, SSM, MSDP added to blueprint but not yet heavy in question pool. Know the fundamentals, don’t over-invest.",
+          "col_d": "Only light conceptual multicast coverage reported so far. BiDir PIM, SSM, MSDP are on the blueprint but not showing up heavily in community reports. Know the fundamentals, don’t over-invest.",
           "col_e": "r/ccnp v1.2 exam advice"
         },
         {
           "col_a": null,
           "col_b": "RESOURCES",
           "col_c": "Study resources recommended by v1.2 passers",
-          "col_d": "• Arash Deljoo (Udemy) — highly rated by multiple passers\n• DigitalTut — labs and questions closely match exam\n• Boson ExSim-MAX — best for lab practice\n• CBT Nuggets v1.2 — video learning\n• Kevin Wallace updated course\n• NotebookLM + OCG PDF for active recall\n• Cisco U for hands-on labs",
-          "col_e": "r/ccnp + DigitalTut v1.2 reports"
+          "col_d": "• Arash Deljoo (Udemy) — highly rated by multiple passers\n• Boson ExSim-MAX — best for lab practice\n• CBT Nuggets v1.2 — video learning\n• Kevin Wallace updated course\n• NotebookLM + OCG PDF for active recall\n• Cisco U for hands-on labs",
+          "col_e": "r/ccnp + March–April 2026 community reports"
         }
       ]
     },
@@ -2361,21 +2361,21 @@
           "col_b": "NEW",
           "col_c": "JSON syntax validation is a question type",
           "col_d": "Pick the valid JSON from 4 options — each has deliberate syntax errors (missing quotes, missing commas, trailing commas, wrong brackets). Practice spotting these cold. Example: {\"key\": \"value\"} vs {key: \"value\"} vs {\"key\": \"value\",}",
-          "col_e": "DigitalTut April 2026"
+          "col_e": "April 2026 community reports"
         },
         {
           "col_a": null,
           "col_b": "NEW",
           "col_c": "Catalyst Center API directions are testable",
           "col_d": "Know northbound, southbound, eastbound, westbound APIs for Catalyst Center (DNA Center). Northbound = toward business apps. Southbound = toward network devices. Eastbound/westbound = peer systems. This is v1.2 AI/Catalyst Center MCQ content.",
-          "col_e": "DigitalTut April 2026"
+          "col_e": "April 2026 community reports"
         },
         {
           "col_a": null,
           "col_b": "NEW",
           "col_c": "Ansible, Chef, SaltStack comparison questions confirmed",
           "col_d": "Agent vs. agentless is explicitly tested. Ansible = agentless (SSH/WinRM). Chef/Puppet = agent-based. SaltStack = both modes. Know which uses which transport and whether a persistent agent is required.",
-          "col_e": "DigitalTut + r/ccnp April 2026"
+          "col_e": "r/ccnp + April 2026 community reports"
         },
         {
           "col_a": null,
@@ -2389,14 +2389,14 @@
           "col_b": "NEW",
           "col_c": "CoPP has 3 active lab variants — know all of them",
           "col_d": "CoPP lab appears as: (1) 8000 bps police rate variant, (2) Telnet protection variant, (3) SSH protection variant. Each requires a different class-map match and policy. Practice all three — you won't know which you'll get.",
-          "col_e": "DigitalTut April 2026"
+          "col_e": "April 2026 community reports"
         },
         {
           "col_a": null,
           "col_b": "NEW",
           "col_c": "OSPF has 3 active lab variants — know network cmd AND interface cmd",
           "col_d": "OSPF lab seen as: (1) /18 subnet via interface command, (2) /19 via network command, (3) /20 via network command. The specific subnet mask changes — you must know both configuration methods and be able to derive the correct wildcard mask quickly.",
-          "col_e": "DigitalTut April 2026"
+          "col_e": "April 2026 community reports"
         },
         {
           "col_a": null,
@@ -2408,9 +2408,9 @@
         {
           "col_a": null,
           "col_b": "WARNING",
-          "col_c": "~38% of MCQs are now outside known question pools",
-          "col_d": "By late April 2026, testers report ~20 of 53 MCQs are \"new\" questions not seen in any prep pool. This reinforces the core message: understand concepts deeply, don't rely on recognition. Boson + Pocket Prep for practice, but expect novel questions.",
-          "col_e": "DigitalTut April 2026"
+          "col_c": "Expect fresh MCQ wording and unfamiliar scenarios",
+          "col_d": "By late April 2026, testers reported many MCQs with unfamiliar wording and scenario framing. This reinforces the core message: understand concepts deeply, don't rely on recognition. Use Boson + Pocket Prep for practice, but expect novel questions.",
+          "col_e": "April 2026 community reports"
         }
       ]
     },
@@ -2423,84 +2423,84 @@
           "col_b": "MAY",
           "col_c": "59 questions is the current common report",
           "col_d": "Multiple May pass reports show 59 total items with 6 labs and ~53 non-lab questions. Treat 6 labs as locked-in and plan MCQ pacing around roughly 50+ remaining items, not a small theory section.",
-          "col_e": "DigitalTut May 18–22 2026 + r/ccnp v1.2 threads"
+          "col_e": "May 2026 community reports + r/ccnp v1.2 threads"
         },
         {
           "col_a": null,
           "col_b": "LAB",
           "col_c": "OSPF now includes DR election and “no network statement” variants",
           "col_d": "May reports add OSPF tasks beyond plain summarization: configure R2 as DR, advertise networks, and handle a variant that specifically says not to use the network statement. Practice interface-level OSPF, network-statement OSPF, DR priority, and wildcard math.",
-          "col_e": "DigitalTut May 18–22 2026"
+          "col_e": "May 2026 community reports"
         },
         {
           "col_a": null,
           "col_b": "LAB",
           "col_c": "Voice VLAN/LLDP and IPv4/IPv6 assignment appeared as surprise labs",
           "col_d": "One May report listed four labs instead of the usual six, including Voice VLAN/LLDP and IPv4 + IPv6 address assignment. Do not over-focus here, but know switchport voice vlan, lldp run, lldp neighbor checks, and basic IPv6 interface assignment.",
-          "col_e": "DigitalTut May 18 2026"
+          "col_e": "May 2026 community reports"
         },
         {
           "col_a": null,
           "col_b": "LAB",
           "col_c": "NetFlow/IP SLA variants are more specific now",
           "col_d": "May variants mention adding UDP port 2055, destination IP, IP SLA HTTP, and ICMP versions. Also note: NetFlow v9 may be default and may not show in running-config, so verify with show flow/exporter commands instead of assuming missing config.",
-          "col_e": "DigitalTut May 18–22 2026"
+          "col_e": "May 2026 community reports"
         },
         {
           "col_a": null,
           "col_b": "LAB",
           "col_c": "eBGP address-family version is active",
           "col_d": "May reports show eBGP Neighbor Sim 2 with /17 or /18 summaries and IPv4 address-family work. Drill neighbor activation, network statements under address-family ipv4, loopback/update-source logic, and summary mask math.",
-          "col_e": "DigitalTut May 18–22 2026"
+          "col_e": "May 2026 community reports"
         },
         {
           "col_a": null,
           "col_b": "LAB",
           "col_c": "CoPP/ACL SSH variant may require numeric port 22",
           "col_d": "A May report says the SSH CoPP/ACL variant expected port 22 instead of the ssh keyword. Practice matching both keyword and numeric forms, plus ICMP and EIGRP ACL/CoPP variants.",
-          "col_e": "DigitalTut May 20–22 2026"
+          "col_e": "May 2026 community reports"
         },
         {
           "col_a": null,
           "col_b": "SURPRISE",
           "col_c": "Wireless remnants still show up even though wireless was removed",
           "col_d": "May reports mention WLC, CAPWAP, AP modes, and RRM questions. Keep this lightweight: know definitions and roles, but do not rebuild full v1.1 wireless study plan.",
-          "col_e": "DigitalTut May 2026 + r/ccnp v1.2 thread"
+          "col_e": "May 2026 community reports + r/ccnp v1.2 thread"
         },
         {
           "col_a": null,
           "col_b": "API",
           "col_c": "HTTP DELETE / 204 No Content and HTTP/2 behavior showed up",
           "col_d": "New automation details include a curl -X DELETE returning HTTP/1.1 204 No Content, plus HTTP/2 REST API single-point vs multi-point connection behavior. Add these to automation flashcards with common HTTP status codes.",
-          "col_e": "DigitalTut May 22 2026"
+          "col_e": "May 2026 community reports"
         },
         {
           "col_a": null,
           "col_b": "SDA",
           "col_c": "Wireless over-the-top fabric wording is testable",
           "col_d": "A May report called out SD-Access wired/wireless coexistence where wireless is deployed “over the top” of the fabric. Know the difference between fabric-enabled wireless and over-the-top wireless at concept level.",
-          "col_e": "DigitalTut May 22 2026"
+          "col_e": "May 2026 community reports"
         },
         {
           "col_a": null,
           "col_b": "LISP",
           "col_c": "Map Resolver function tested more specifically",
           "col_d": "May report: LISP Map Resolver decapsulates map-request messages from ITRs and forwards them to the Map Server. Make flashcards for EID, RLOC, ITR, ETR, Map Server, and Map Resolver functions.",
-          "col_e": "DigitalTut May 22 2026"
+          "col_e": "May 2026 community reports"
         },
         {
           "col_a": null,
           "col_b": "MCQ",
           "col_c": "Classic infrastructure one-liners still matter",
           "col_d": "May reports mention VSS single point of management, SSO for redundant supervisor takeover, PIM RP benefits, and QoS interpretation. These are small points, but easy wins if memorized cleanly.",
-          "col_e": "DigitalTut May 18–22 2026"
+          "col_e": "May 2026 community reports"
         },
         {
           "col_a": null,
-          "col_b": "POOL",
-          "col_c": "Lab pool looks stable; MCQ pool keeps rotating",
-          "col_d": "May reports still show the same lab families, but users report 5–20 new MCQs and different pools per test taker. Translation: lab families are predictable; MCQs require concept depth, not dump recognition.",
-          "col_e": "DigitalTut May 18–22 2026 + r/ccnp v1.2 threads"
+          "col_b": "TREND",
+          "col_c": "Lab families look stable; MCQ topics keep rotating",
+          "col_d": "May reports still point to the same broad lab families, but users report fresh MCQ wording and different topic mixes per test taker. Translation: build concept depth and troubleshooting skill, not recognition memory.",
+          "col_e": "May 2026 community reports + r/ccnp v1.2 threads"
         }
       ]
     }
