@@ -1729,778 +1729,151 @@
   ],
   "redditTips": [
     {
-      "title": "1. EXAM FORMAT & DAY-OF STRATEGY",
+      "title": "1. ETHICAL EXAM PREP BOUNDARIES",
       "items": [
         {
-          "col_b": "1",
-          "col_c": "Exam structure: 6 labs + 50 MCQs",
-          "col_d": "Always 6 labs first, then ~50 multiple choice / drag-and-drop. You CANNOT go back to labs after clicking next. Labs are weighted heavily — failing even 1 can tank your score.",
-          "col_e": "ENCOR 350-401 exam tips"
+          "col_b": "OK",
+          "col_c": "Use public blueprint objectives as the source of truth",
+          "col_d": "Keep study notes tied to Cisco's published ENCOR blueprint, official documentation, course labs, and your own practice results. Avoid notes based on remembered exam content or private testing details.",
+          "col_e": "Compliance-safe study guidance"
         },
         {
-          "col_b": "2",
-          "col_c": "Lab topics are predictable",
-          "col_d": "The 6 labs always cover: CoPP, VRF tunnel, OSPF, BGP, trunking/EtherChannel, and NetFlow. The pool is ~35 labs, but most are variations of each other. Know these cold — no time to fumble with syntax.",
-          "col_e": "ENCOR 350-401 exam tips"
+          "col_b": "OK",
+          "col_c": "Turn reports into broad study categories only",
+          "col_d": "If a community post says a topic felt important, translate that into a general blueprint area to review. Do not preserve exact item wording, task lists, device roles, scoring claims, or timing claims from someone's exam attempt.",
+          "col_e": "Compliance-safe study guidance"
         },
         {
-          "col_b": "3",
-          "col_c": "Time management is critical",
-          "col_d": "Exam is exactly 2 hours. Reserve at least 45 minutes for MCQs. Use the initial 10-minute survey period to write your CIDR table (/32 to /16) and dump any memorized facts onto the whiteboard.",
-          "col_e": "ENCOR 350-401 exam tips"
+          "col_b": "NO",
+          "col_c": "Do not collect or memorize disclosed exam content",
+          "col_d": "Remove anything framed around remembered live exam content, exact task disclosure, answer patterns, scoring claims, or private test-center details. Those details can cross Cisco NDA lines and make prep less honest anyway.",
+          "col_e": "Compliance-safe study guidance"
         },
         {
-          "col_b": "4",
-          "col_c": "Lab CLI can be painfully slow",
-          "col_d": "Multiple users report 2-3 second delay per character when typing in lab simulations. Plan for this — it makes labs take longer than expected. Practice typing commands from memory, not tab-completion.",
-          "col_e": "People who have recently passed ENCOR"
-        },
-        {
-          "col_b": "5",
-          "col_c": "Don't panic on unknown questions",
-          "col_d": "\"Don't get flustered when you see a question and have no clue what they're talking about.\" Some questions pull from Cisco Live presentations and whitepapers outside the OCG/blueprint. Accept that ~10-15% of questions may feel unfamiliar.",
-          "col_e": "People who have recently passed ENCOR"
-        },
-        {
-          "col_b": "6",
-          "col_c": "Consider a recon attempt",
-          "col_d": "Multiple redditors recommend scheduling the exam early, even if you might fail, just to experience the format and question style. \"Go take the test once, and you'll see what you really need to work on.\"",
-          "col_e": "ENCOR OCG 2nd Edition — Why isn't it enough?"
+          "col_b": "OK",
+          "col_c": "Practice skills, not recognition",
+          "col_d": "Use labs to build troubleshooting speed and command fluency. The goal is to solve unfamiliar network problems from fundamentals, not recognize a leaked scenario.",
+          "col_e": "Compliance-safe study guidance"
         }
       ]
     },
     {
-      "title": "2. WHAT PEOPLE WISH THEY KNEW BEFORE TAKING ENCOR",
+      "title": "2. FAIR-GAME STUDY STRATEGY",
       "items": [
         {
-          "col_b": "1",
-          "col_c": "The OCG alone is NOT enough",
-          "col_d": "\"You aren't passing a higher-level exam by using just the OCG.\" The OCG provides a foundation, but you need Cisco white papers, vendor docs, and multiple video sources to reach exam depth. The OCG has 50+ pages of errata.",
-          "col_e": "ENCOR OCG — Best way to take it in?"
+          "col_b": "PLAN",
+          "col_c": "Study from the ENCOR domains",
+          "col_d": "Balance architecture, virtualization, infrastructure, network assurance, security, automation, and AI topics according to the published blueprint. Use weak areas from practice tests to decide what gets extra time.",
+          "col_e": "Blueprint-based preparation"
         },
         {
-          "col_b": "2",
-          "col_c": "Automation is MUCH heavier than expected",
-          "col_d": "One user reported ~72% of their questions were automation/scripting — far beyond the stated 15% blueprint weight. \"I concentrated on infrastructure and routing but the exam surprised me with a strong emphasis on automation.\" You must be comfortable reading Python, parsing JSON/XML, and understanding REST APIs.",
-          "col_e": "CCNP ENCOR Exam Experience Tips"
+          "col_b": "LABS",
+          "col_c": "Build repeatable configuration and verification habits",
+          "col_d": "For every lab topic you study, practice a clean loop: read requirements, plan the config, apply it, verify with show/debug/API output, break one thing, and troubleshoot it back to working.",
+          "col_e": "Hands-on skill development"
         },
         {
-          "col_b": "3",
-          "col_c": "SD-WAN and SDA are huge",
-          "col_d": "\"I've seen comments say that the test is upwards of 40% SD-WAN, automation, and programmability.\" Know Cisco SD-WAN (Catalyst SD-WAN) architecture, vSmart, vBond, vEdge, and SDA concepts (fabric, LISP, VXLAN) inside and out.",
-          "col_e": "People who have recently passed ENCOR"
+          "col_b": "REVIEW",
+          "col_c": "Explain why each command or design choice works",
+          "col_d": "After a lesson or lab, write a one-paragraph explanation in your own words. If you cannot explain the control plane, data plane, or failure mode, revisit the source material before moving on.",
+          "col_e": "Active recall and elaboration"
         },
         {
-          "col_b": "4",
-          "col_c": "Labs matter MORE than MCQs",
-          "col_d": "\"The labs carry significantly more weight compared to the questions. If you make a mistake on just one lab, even if you excel in the questions, it could have a substantial impact.\" Practice config, not just theory.",
-          "col_e": "ENCOR 350-401 exam tips"
-        },
-        {
-          "col_b": "5",
-          "col_c": "Pay attention to BLUEPRINT VERBS",
-          "col_d": "\"It's crucial to pay attention to the verbs at the beginning of each exam topic.\" Topics that say CONFIGURE will have lab questions. Topics that say DESCRIBE are theory only. This determines your study depth for each topic.",
-          "col_e": "ENCOR OCG 2nd Edition — Why isn't it enough?"
-        },
-        {
-          "col_b": "6",
-          "col_c": "Dragging out study = forgetting earlier topics",
-          "col_d": "\"I didn't keep myself on a schedule and allowed it to drag out. It got to the point where I hadn't reviewed certain topics in a few months.\" Condensing to 3 months with Anki made the difference. Your Anki habit is critical.",
-          "col_e": "ENCOR Struggles"
-        },
-        {
-          "col_b": "7",
-          "col_c": "Boson scores ≠ real exam scores",
-          "col_d": "\"Most people who attend the exam say that there are no repeated questions from Pearson or Boson. There will be pretty new questions in the exam, but covering the same topic with similar tricks.\" Use Boson to learn concepts, not memorize answers.",
-          "col_e": "ENCOR 350-401 exam tips"
-        },
-        {
-          "col_b": "8",
-          "col_c": "Virtualization is barely on the exam",
-          "col_d": "\"I encountered only about two questions related to virtualization.\" Multiple users confirm this is low-weight. Don't over-invest time here — a general understanding is sufficient.",
-          "col_e": "CCNP ENCOR Exam Experience Tips"
+          "col_b": "MIX",
+          "col_c": "Interleave topics after first pass learning",
+          "col_d": "Shuffle practice across routing, switching, assurance, security, and automation so you can identify problem types without being cued by the chapter you just studied.",
+          "col_e": "Retention strategy"
         }
       ]
     },
     {
-      "title": "3. MOST VALUABLE STUDY METHODS (Ranked by Reddit Consensus)",
+      "title": "3. LAB PRACTICE HABITS",
       "items": [
         {
-          "col_b": "1",
-          "col_c": "Hands-on labbing (daily)",
-          "col_d": "\"The more time you spend doing labs, the easier it all becomes.\" Build a 3-router/3-switch topology. Configure OSPF, BGP, EIGRP, CoPP, VRF, EtherChannel. Wipe config and rebuild daily for 2-3 weeks until commands are muscle memory.",
-          "col_e": "CML, Cisco U, INE, CBT Nuggets labs"
+          "col_b": "METHOD",
+          "col_c": "Use legal lab sources",
+          "col_d": "Stick to official Cisco labs, reputable courses, your own CML/EVE-NG/GNS3 topologies, and practice scenarios you create from blueprint objectives. Avoid materials that claim to reproduce live assessment content.",
+          "col_e": "Ethical resources"
         },
         {
-          "col_b": "2",
-          "col_c": "Anki flashcards with spaced repetition",
-          "col_d": "\"The biggest game changer in terms of retention was Anki.\" Active recall backed by science. Make your own cards as you study — one user has ~10,000 cards. Review daily, even on travel days. This prevents the \"forgot chapter 1 by chapter 30\" problem.",
-          "col_e": "Anki (you already use this)"
+          "col_b": "VERIFY",
+          "col_c": "Practice verification as much as configuration",
+          "col_d": "Build a habit of proving that a feature works: inspect neighbor state, routes, policies, counters, telemetry, API responses, logs, and failure symptoms. Verification skill transfers better than memorized command blocks.",
+          "col_e": "Troubleshooting readiness"
         },
         {
-          "col_b": "3",
-          "col_c": "Practice exams (learn from explanations)",
-          "col_d": "Use Boson/Pearson to identify weak areas, not to memorize answers. Read EVERY explanation, even for correct answers. \"Doing thousands of practice questions from any resource\" drills info from different angles. Target 800+ on Boson before scheduling.",
-          "col_e": "Boson ExSim, Pocket Prep (800 MCQs), Pearson Test Prep"
+          "col_b": "REPAIR",
+          "col_c": "Add troubleshooting reps",
+          "col_d": "After a successful lab, intentionally introduce safe misconfigurations and recover from them. Focus on reading outputs and forming hypotheses before changing configs.",
+          "col_e": "Troubleshooting readiness"
         },
         {
-          "col_b": "4",
-          "col_c": "Multiple video sources per topic",
-          "col_d": "\"Watch at least two video series per subject.\" Different instructors explain things differently. CBT Nuggets for overview, then INE or Kevin Wallace for depth. YouTube deep dives for specific protocols.",
-          "col_e": "CBT Nuggets, INE, Kevin Wallace (Udemy), YouTube"
-        },
-        {
-          "col_b": "5",
-          "col_c": "Cisco white papers and documentation",
-          "col_d": "\"The Boson Exam Sim gave me an idea of just how deep I had to go — Cisco whitepapers and curated YT vids on very specific topics.\" When Boson reveals a gap, go straight to Cisco docs for that technology. Essential for SD-WAN/SDA depth.",
-          "col_e": "cisco.com documentation"
-        },
-        {
-          "col_b": "6",
-          "col_c": "Create a command reference guide",
-          "col_d": "\"I created a command reference guide that encompassed all the lab topics, and that proved to be extremely beneficial.\" List every configure/verify command for each blueprint topic. Review before the exam.",
-          "col_e": "Build your own as you lab"
-        },
-        {
-          "col_b": "7",
-          "col_c": "Topic-focused study blocks (not sequential reading)",
-          "col_d": "\"Focus on one topic or area at a time. Watch videos, cover chapters, lab it.\" Don't read the OCG cover-to-cover — study one protocol across all resources, then move to the next. This builds depth instead of shallow breadth.",
-          "col_e": "Use your Weekly Plan sheet to sequence topics"
+          "col_b": "PACE",
+          "col_c": "Practice under time pressure without chasing leaked timing details",
+          "col_d": "Use timed practice blocks to build calm execution. Track your own time per task and improve bottlenecks instead of relying on community claims about current exam timing or section order.",
+          "col_e": "Exam-day readiness"
         }
       ]
     },
     {
-      "title": "4. STUDY MATERIAL RANKINGS (Reddit Consensus)",
+      "title": "4. PRACTICE TESTS & RETENTION",
       "items": [
         {
-          "col_b": "S",
-          "col_c": "Hands-on labs (CML/EVE-NG/GNS3)",
-          "col_d": "Universally praised. \"Lab the heck out of each topic until it becomes second nature.\" The single most important thing you can do. Labs are 6/56 of your exam — and weighted most heavily.",
-          "col_e": "Yes — Cisco U, INE, CBT labs"
+          "col_b": "TESTS",
+          "col_c": "Use practice exams diagnostically",
+          "col_d": "Treat Boson, Pearson, course quizzes, and flashcards as feedback tools. Review every miss, explain the underlying concept, and avoid answer memorization.",
+          "col_e": "Concept-first practice"
         },
         {
-          "col_b": "S",
-          "col_c": "Anki / Flashcards",
-          "col_d": "\"The biggest game changer.\" Prevents knowledge decay over a long study period. Make your own cards — pre-made decks are less effective.",
-          "col_e": "Yes — Anki"
+          "col_b": "ANKI",
+          "col_c": "Make flashcards from concepts and mistakes",
+          "col_d": "Prefer cards that ask you to explain behavior, compare technologies, interpret outputs, or choose a next troubleshooting step. Avoid cards based on remembered test wording.",
+          "col_e": "Spaced repetition"
         },
         {
-          "col_b": "A",
-          "col_c": "Boson ExSim-MAX",
-          "col_d": "Most-recommended practice exam. Explanations teach you why answers are right/wrong. Some outdated content (pre-2020 items reported), but still the gold standard. Aim for 800+ before scheduling real exam.",
-          "col_e": "Yes — Boson"
+          "col_b": "NOTES",
+          "col_c": "Keep a clean mistake log",
+          "col_d": "For each missed question or failed lab, capture the objective, what you misunderstood, the correct reasoning, and a follow-up drill. That log is more useful than community rumor tracking.",
+          "col_e": "Review workflow"
         },
         {
-          "col_b": "A",
-          "col_c": "Cisco White Papers / Documentation",
-          "col_d": "\"OCG and CBT Nuggets don't go deep enough. Cisco whitepapers fill the gap.\" Essential for SD-WAN, SDA, DNAC/Catalyst Center, and any topic where Boson reveals weakness.",
-          "col_e": "Free — cisco.com"
-        },
-        {
-          "col_b": "A",
-          "col_c": "INE Video Course",
-          "col_d": "\"I find INE to be quite effective — primarily based on the OCG but expands on its content.\" Strong diagrams for multicast and theory-heavy topics. Good depth.",
-          "col_e": "Yes — INE"
-        },
-        {
-          "col_b": "B+",
-          "col_c": "OCG 2nd Edition",
-          "col_d": "Necessary but not sufficient. Good foundation, but \"50+ pages of errata\" and doesn't go deep enough alone. Best used after videos to fill gaps, not as primary source. Focus on \"Key Topics\" sections.",
-          "col_e": "Yes — OCG 2nd Ed"
-        },
-        {
-          "col_b": "B+",
-          "col_c": "CBT Nuggets",
-          "col_d": "Good for overview and breaking into topics. \"A good summary.\" Best paired with deeper resources. Your primary video source — you're on the right track.",
-          "col_e": "Yes — CBT Nuggets"
-        },
-        {
-          "col_b": "B+",
-          "col_c": "Kevin Wallace (Udemy)",
-          "col_d": "\"Shorter and explains some things differently that helped me understand better.\" Good as a cram or second-pass resource. Affordable.",
-          "col_e": "Optional — ~$15 on Udemy"
-        },
-        {
-          "col_b": "B",
-          "col_c": "Pocket Prep / Pearson Test Prep",
-          "col_d": "Good for drilling MCQs on the go. \"Doing thousands of practice questions from any resource drills info from different angles.\" Supplement to Boson, not replacement.",
-          "col_e": "Yes — Pocket Prep (800 MCQs)"
-        },
-        {
-          "col_b": "B",
-          "col_c": "Network Lessons",
-          "col_d": "Fairly good but lacks comprehensive detail. Best for specific topic lookups rather than end-to-end study.",
-          "col_e": "Free — networklessons.com"
-        },
-        {
-          "col_b": "C",
-          "col_c": "YouTube (various)",
-          "col_d": "Essential for deep dives on specific protocols when other resources fall short. Search for specific topics, not general ENCOR playlists.",
-          "col_e": "Free"
+          "col_b": "FINAL",
+          "col_c": "Use the last week for synthesis",
+          "col_d": "Revisit weak blueprint areas, redo representative labs from scratch, skim official docs for fuzzy features, and sleep enough. Do not spend the final stretch chasing community rumor threads.",
+          "col_e": "Final review"
         }
       ]
     },
     {
-      "title": "5. HIGH-YIELD TOPICS — What Actually Shows Up vs. Blueprint Weight",
+      "title": "5. SAFE RESOURCE LINKS",
       "items": [
         {
-          "col_b": "CRITICAL",
-          "col_c": "SD-WAN / Catalyst SD-WAN",
-          "col_d": "Reported as 30-40% of exam by multiple test-takers. Know architecture (vSmart, vBond, vEdge/cEdge), OMP, control/data policies, templates, and troubleshooting. \"Familiarize yourself with any Cisco product that begins with SD.\"",
-          "col_e": "Weeks 7-8"
-        },
-        {
-          "col_b": "CRITICAL",
-          "col_c": "Automation / Python / REST APIs",
-          "col_d": "One user saw ~72% automation questions. Know: reading Python code (not writing from scratch), JSON/XML parsing, RESTCONF/NETCONF concepts, YANG data models, EEM applets. For v1.2: Catalyst Center APIs replace DNA Center.",
-          "col_e": "Week 9"
-        },
-        {
-          "col_b": "CRITICAL",
-          "col_c": "BGP (eBGP configuration)",
-          "col_d": "Always a lab topic. \"Know how to establish neighbors, advertise routes, read a show command.\" Understand best path selection algorithm, AS-PATH, and basic route filtering. Lab this until it's muscle memory.",
-          "col_e": "Week 5"
-        },
-        {
-          "col_b": "CRITICAL",
-          "col_c": "OSPF (multi-area, summarization, filtering)",
-          "col_d": "Always a lab topic. Configure OSPFv2/v3 with multiple areas, summarization, and filtering. Also common in OSPF route filtering labs. \"You will be filtering routes for OSPF.\"",
-          "col_e": "Week 5"
-        },
-        {
-          "col_b": "HIGH",
-          "col_c": "CoPP (Control Plane Policing)",
-          "col_d": "Always a lab topic. Know how to configure CoPP to protect the control plane. Practice the full config sequence — class-maps, policy-maps, service-policy.",
-          "col_e": "Week 2 (QoS block)"
-        },
-        {
-          "col_b": "HIGH",
-          "col_c": "SDA / Cisco Catalyst Center",
-          "col_d": "Understand fabric concepts, LISP/VXLAN fundamentals, Catalyst Center (formerly DNAC). For v1.2: note AI-driven workflows in Catalyst Center.",
-          "col_e": "Weeks 7-8"
-        },
-        {
-          "col_b": "HIGH",
-          "col_c": "EtherChannel / Trunking",
-          "col_d": "Always a lab topic. Configure LACP/PAgP EtherChannels, 802.1Q trunks. Simple but you must know exact syntax — no time to guess.",
-          "col_e": "Week 3"
-        },
-        {
-          "col_b": "HIGH",
-          "col_c": "NetFlow / Network Assurance",
-          "col_d": "Always a lab topic. Configure and verify NetFlow/Flexible NetFlow. Understand SNMP, IP SLA, syslog, and streaming telemetry.",
-          "col_e": "Week 6"
-        },
-        {
-          "col_b": "MEDIUM",
-          "col_c": "QoS (classification, marking, queuing)",
-          "col_d": "Understand MQC (class-map, policy-map, service-policy), DSCP markings, queuing mechanisms (CBWFQ, LLQ), and policing vs. shaping. Interpret configurations.",
-          "col_e": "Weeks 1-2"
-        },
-        {
-          "col_b": "MEDIUM",
-          "col_c": "Multicast (expanded in v1.2)",
-          "col_d": "v1.2 adds SSM, bidirectional PIM, MSDP, RP election. Broader coverage than v1.1. \"You will need to focus on multicast in greater depth.\"",
-          "col_e": "Week 4"
-        },
-        {
-          "col_b": "MEDIUM",
-          "col_c": "Security (ACLs, AAA, MACsec, TrustSec)",
-          "col_d": "Device access control, AAA, CoPP, ACLs. v1.2 removes 802.1X/MAB/WebAuth. Still need defense-in-depth, NGFW concepts, TrustSec, MACsec.",
-          "col_e": "Week 6"
-        },
-        {
-          "col_b": "MEDIUM",
-          "col_c": "EIGRP (comparison with OSPF)",
-          "col_d": "Mostly theory — compare with OSPF (metrics, convergence, path selection). Less lab-heavy than OSPF/BGP but still tested.",
-          "col_e": "Week 5"
-        },
-        {
-          "col_b": "LOW",
-          "col_c": "Virtualization",
-          "col_d": "\"Only about two questions.\" General understanding of VRF, GRE, IPsec, LISP, VXLAN concepts is sufficient. Don't over-invest.",
-          "col_e": "Week 4"
-        },
-        {
-          "col_b": "LOW",
-          "col_c": "First-Hop Redundancy (HSRP/VRRP)",
-          "col_d": "Know the basics — concepts, configuration, and verification. Not a major exam topic.",
-          "col_e": "Week 4"
-        }
-      ]
-    },
-    {
-      "title": "6. v1.2 EXAM CHANGES — What’s Different (Live March 19, 2026)",
-      "items": [
-        {
-          "col_b": "REMOVED",
-          "col_c": "Entire Wireless domain eliminated",
-          "col_d": "No RF fundamentals, AP modes, WLC, roaming, WLAN troubleshooting, or wireless security. Saves significant study time. These topics moved to CCNP Enterprise Wireless.",
-          "col_e": "r/ccnp v1.1 vs v1.2 comparison"
-        },
-        {
-          "col_b": "REMOVED",
-          "col_c": "802.1X / MAB / WebAuth removed",
-          "col_d": "Network access control topics are gone from ENCOR v1.2. No need to study EAPOL 4-way handshake or wireless auth methods.",
-          "col_e": "r/ccnp v1.1 vs v1.2 comparison"
-        },
-        {
-          "col_b": "REMOVED",
-          "col_c": "CEF / TCAM / FIB specifics removed from Architecture",
-          "col_d": "Hardware switching mechanisms are no longer explicitly in the Architecture domain. Less memorization of table structures.",
-          "col_e": "r/ccnp v1.1 vs v1.2 comparison"
-        },
-        {
-          "col_b": "REMOVED",
-          "col_c": "Chef / Puppet / SaltStack specifics",
-          "col_d": "Individual orchestration tool names removed. Now just \"agent vs. agentless orchestration tools\" — understand the concept, not the product specifics.",
-          "col_e": "r/ccnp v1.1 vs v1.2 comparison"
-        },
-        {
-          "col_b": "EXPANDED",
-          "col_c": "Multicast significantly broadened",
-          "col_d": "Now includes: RP election, PIM, IGMP v2/v3, SSM, bidirectional PIM, and MSDP. Much deeper coverage than v1.1. Dedicate extra time here.",
-          "col_e": "r/ccnp v1.1 vs v1.2 comparison"
-        },
-        {
-          "col_b": "ADDED",
-          "col_c": "AI-driven workflows in Catalyst Center",
-          "col_d": "New: understand traditional + AI-powered approaches for configuration, monitoring, and management in Catalyst Center.",
-          "col_e": "r/ccnp v1.1 vs v1.2 comparison"
-        },
-        {
-          "col_b": "RENAMED",
-          "col_c": "DNA Center → Catalyst Center; vManage → SD-WAN Manager",
-          "col_d": "Rebranding throughout. Exam will use new names. Make sure your study materials use current terminology.",
-          "col_e": "r/ccnp v1.1 vs v1.2 comparison"
-        },
-        {
-          "col_b": "RENAMED",
-          "col_c": "Automation → Automation and AI",
-          "col_d": "Domain 6.0 title changed. Same core content (Python, REST APIs, NETCONF) but with AI workflow additions.",
-          "col_e": "r/ccnp v1.1 vs v1.2 comparison"
-        },
-        {
-          "col_a": null,
-          "col_b": "CONFIRMED",
-          "col_c": "No routing/switching MCQs outside of labs",
-          "col_d": "Multiple v1.2 takers confirm: all routing/switching is tested exclusively through the 6 labs. The MCQ section is now automation/SDN/security/SD-WAN heavy.",
-          "col_e": "r/ccnp v1.2 exam advice"
-        },
-        {
-          "col_a": null,
-          "col_b": "CONFIRMED",
-          "col_c": "Automation/Python is even heavier than v1.1",
-          "col_d": "Lots of drag-and-drop for Python, JSON, EEM scripts, Ansible/Puppet/Chef. REST API troubleshooting with Postman screenshots. Know json.dump/dumps/load/loads, file I/O, for loops, format functions.",
-          "col_e": "r/ccnp v1.2 exam advice"
-        },
-        {
-          "col_a": null,
-          "col_b": "CONFIRMED",
-          "col_c": "NGFW questions are prominent",
-          "col_d": "Multiple takers report \"lots of questions on next generation firewalls.\" This is a heavier area than in v1.1.",
-          "col_e": "r/ccnp v1.2 exam advice"
-        }
-      ]
-    },
-    {
-      "title": "7. COMMON MISTAKES & PITFALLS",
-      "items": [
-        {
-          "col_b": "1",
-          "col_c": "Treating ENCOR as \"extended CCNA\"",
-          "col_d": "\"If your study approach has been treating this as merely an extension of the CCNA, you might find yourself unprepared.\" ENCOR requires deeper understanding, config from memory, and Cisco-specific product knowledge.",
-          "col_e": "With your CCNA + DevNet + CyberOps background, you have a strong foundation. Just make sure you go deeper."
-        },
-        {
-          "col_b": "2",
-          "col_c": "Memorizing Boson answers instead of learning concepts",
-          "col_d": "\"Focus on understanding the material; simply memorizing the answers won't benefit you in the long run.\" Read every explanation. Take Boson in Study Mode, not just Exam Mode.",
-          "col_e": "Use Boson in Study Mode first. Switch to Exam Mode only for final readiness checks."
-        },
-        {
-          "col_b": "3",
-          "col_c": "Skipping labs or doing them passively",
-          "col_d": "\"I had to go back and lab, study and lab some more.\" Don't just follow along — wipe configs and rebuild from scratch. The exam CLI is slow, so you need commands memorized, not looked up.",
-          "col_e": "Your CBT + Cisco U + INE labs cover this. Do each lab at least twice."
-        },
-        {
-          "col_b": "4",
-          "col_c": "Not studying automation deeply enough",
-          "col_d": "Most common regret. \"I concentrated on infrastructure but the exam surprised me with automation.\" Even CCNA DevNet holders should review RESTCONF, YANG models, and Python parsing at ENCOR depth.",
-          "col_e": "Your DevNet Associate helps, but review RESTCONF/NETCONF and Catalyst Center APIs specifically."
-        },
-        {
-          "col_b": "5",
-          "col_c": "Studying topics removed in v1.2",
-          "col_d": "Don't waste time on wireless (RF, WLC, AP modes, roaming), 802.1X/MAB/WebAuth, or Chef/Puppet/SaltStack specifics. These are gone from v1.2.",
-          "col_e": "Your CBT Nuggets course may still cover these — skip wireless lessons."
-        },
-        {
-          "col_b": "6",
-          "col_c": "Letting the study period drag out",
-          "col_d": "\"I didn't keep myself on a schedule and allowed it to drag out... I hadn't reviewed certain topics in a few months.\" Stick to your 10-week plan. Anki prevents decay.",
-          "col_e": "Your 10-week plan + Anki travel-day reviews should prevent this."
-        },
-        {
-          "col_b": "7",
-          "col_c": "Ignoring Cisco white papers",
-          "col_d": "\"OCG and CBT Nuggets don't go deep enough.\" When Boson reveals a gap, go to Cisco docs — especially for SD-WAN architecture, SDA, and Catalyst Center.",
-          "col_e": "Bookmark cisco.com docs for SD-WAN, SDA, and Catalyst Center."
-        }
-      ]
-    },
-    {
-      "title": "8. PRO TIPS FROM PEOPLE WHO PASSED",
-      "items": [
-        {
-          "col_b": "1",
-          "col_c": "Write your CIDR table (/32 to /16) during the 10-min survey period before the exam starts — saves time during subnetting questions.",
+          "col_b": "->",
+          "col_c": "Cisco ENCOR exam overview and blueprint",
           "col_d": "",
-          "col_e": ""
-        },
-        {
-          "col_b": "2",
-          "col_c": "Build a 3-router / 3-switch topology in CML. Configure OSPF, then add BGP, EIGRP, VRF, CoPP. Wipe and rebuild daily for 2-3 weeks.",
-          "col_d": "",
-          "col_e": ""
-        },
-        {
-          "col_b": "3",
-          "col_c": "Cisco Sandbox (devnetsandbox.cisco.com) provides free access to DNA Center / Catalyst Center — use it to practice API calls and GUI navigation.",
-          "col_d": "",
-          "col_e": ""
-        },
-        {
-          "col_b": "4",
-          "col_c": "The \"Key Topics\" callout boxes in the OCG are where most exam questions come from. If you're short on time, focus on these.",
-          "col_d": "",
-          "col_e": ""
-        },
-        {
-          "col_b": "5",
-          "col_c": "Stop studying 2-3 days before the exam. If you're not ready by then, cramming won't help. Rest and go in fresh.",
-          "col_d": "",
-          "col_e": ""
-        },
-        {
-          "col_b": "6",
-          "col_c": "Join \"The Art of Network Engineering\" Discord — the #ccnp-encor channel has active study groups and people sharing exam experiences.",
-          "col_d": "",
-          "col_e": ""
-        },
-        {
-          "col_b": "7",
-          "col_c": "For v1.2: verify your Boson/Pearson practice tests are updated. Older versions may still include wireless questions that are no longer on the exam.",
-          "col_d": "",
-          "col_e": ""
-        },
-        {
-          "col_b": "8",
-          "col_c": "Track your Boson scores over time. When you consistently hit 800+ across all domains, you're ready. Below that, keep studying.",
-          "col_d": "",
-          "col_e": ""
-        },
-        {
-          "col_b": "9",
-          "col_c": "One user studied 207 hours over ~3 months before feeling exam-ready. Expect 150-250+ total hours for ENCOR.",
-          "col_d": "",
-          "col_e": ""
-        },
-        {
-          "col_b": "10",
-          "col_c": "Create Anki cards AS you study, not after. The act of creating the card is part of the learning process.",
-          "col_d": "",
-          "col_e": ""
-        }
-      ]
-    },
-    {
-      "title": "9. USEFUL LINKS & COMMUNITY RESOURCES",
-      "items": [
-        {
-          "col_b": "→",
-          "col_c": "r/ccnp — Main CCNP subreddit",
-          "col_d": "",
-          "col_e": "",
-          "url": "https://www.reddit.com/r/ccnp/"
-        },
-        {
-          "col_b": "→",
-          "col_c": "ENCOR v1.1 vs v1.2 comparison (90 upvotes)",
-          "col_d": "",
-          "col_e": "",
-          "url": "https://www.reddit.com/r/ccnp/comments/1n6vz0b/encor_v11_v12_comparison_and_differences/"
-        },
-        {
-          "col_b": "→",
-          "col_c": "ENCOR 350-401 exam tips (19 upvotes, lab details)",
-          "col_d": "",
-          "col_e": "",
-          "url": "https://www.reddit.com/r/ccnp/comments/1kz05n6/ccnp_encor_350401_exams_tips/"
-        },
-        {
-          "col_b": "→",
-          "col_c": "How to study for ENCOR from CCNA-level",
-          "col_d": "",
-          "col_e": "",
-          "url": "https://www.reddit.com/r/Cisco/comments/1pb19q6/how_to_study_for_ccnp_encorenarsifrom_a_ccnalevel/"
-        },
-        {
-          "col_b": "→",
-          "col_c": "ENCOR retention strategies (Anki, active recall)",
-          "col_d": "",
-          "col_e": "",
-          "url": "https://www.reddit.com/r/Anki/comments/rep63q/the_problem_with_active_recall_and_spaced/"
-        },
-        {
-          "col_b": "→",
-          "col_c": "Cisco DevNet Sandbox (free labs)",
-          "col_d": "",
-          "col_e": "",
-          "url": "https://developer.cisco.com/site/sandbox/"
-        },
-        {
-          "col_b": "→",
-          "col_c": "The Art of Network Engineering Discord",
-          "col_d": "",
-          "col_e": "",
-          "url": "https://artofnetworkengineering.com/tag/discord/"
-        },
-        {
-          "col_b": "→",
-          "col_c": "Cisco ENCOR v1.2 Exam Topics",
-          "col_d": "",
-          "col_e": "",
+          "col_e": "Official source",
           "url": "https://learningnetwork.cisco.com/s/encor-exam-topics"
-        }
-      ]
-    },
-    {
-      "title": "10. v1.2 FIRST-HAND EXAM INTEL (March–April 2026)",
-      "icon": "🎯",
-      "items": [
-        {
-          "col_a": null,
-          "col_b": "LABS",
-          "col_c": "Same 6 lab topics, but with configuration variants",
-          "col_d": "OSPF Summarization now uses \"network\" command (not just interface-level). NetFlow lab may ask about exporter config instead of applying monitor. LACP lab requires removing \"switchport access vlan\" from trunk interfaces. Know BOTH approaches for every lab.",
-          "col_e": "March–April 2026 community reports"
         },
         {
-          "col_a": null,
-          "col_b": "LABS",
-          "col_c": "The 6 confirmed lab topics for v1.2",
-          "col_d": "1) EtherChannel/LACP + STP Root Bridge\n2) Multi-area OSPF + Summarization\n3) eBGP + Subnetting (many loopbacks)\n4) VRF + Tunnel + NetFlow + IP SLA + Local SPAN\n5) ACL (fix without deleting) + CoPP\n6) NetFlow (exporter or monitor variant)\n\nTip: \"I got all my labs done in 30 minutes and had 1:30 for MCQs.\" Speed comes from muscle memory.",
-          "col_e": "r/ccnp + March–April 2026 community reports"
+          "col_b": "->",
+          "col_c": "Cisco Press ENCOR Official Cert Guide",
+          "col_d": "",
+          "col_e": "Official study resource",
+          "url": "https://www.ciscopress.com/"
         },
         {
-          "col_a": null,
-          "col_b": "MCQ",
-          "col_c": "Python/JSON specifics you MUST know",
-          "col_d": "json.dump() vs json.dumps() vs json.load() vs json.loads()\nJSONEncoder().encode(data) / JSONDecoder().decode(data)\nFile I/O: with open(\"file.json\", \"r\") as f\nPython for loops, format functions\nInterpreting code output from snippets\n\n\"There were 2 very hard python code snippets that didn’t relate to json or networking at all.\"",
-          "col_e": "r/ccnp v1.2 exam advice (u/AccforBruiseadvice)"
+          "col_b": "->",
+          "col_c": "Cisco U.",
+          "col_d": "",
+          "col_e": "Official training and labs",
+          "url": "https://u.cisco.com/"
         },
         {
-          "col_a": null,
-          "col_b": "MCQ",
-          "col_c": "REST API troubleshooting is on the exam",
-          "col_d": "Expect a screenshot of a Postman REST API POST request with an error — you need to identify the issue. Know HTTP status codes, request/response headers, JSON payload structure, and common API errors.",
-          "col_e": "r/ccnp v1.2 exam advice"
-        },
-        {
-          "col_a": null,
-          "col_b": "MCQ",
-          "col_c": "SD-WAN and SDA are easy points",
-          "col_d": "\"Mostly easy one-liner questions for SD-Access, SD-WAN, LISP, VXLAN about the components.\" Know the architecture and component names (vBond, vSmart, vEdge / SD-WAN Manager). Don’t over-study — conceptual only.",
-          "col_e": "r/ccnp v1.2 exam advice"
-        },
-        {
-          "col_a": null,
-          "col_b": "MCQ",
-          "col_c": "Config snippet troubleshooting is heavy",
-          "col_d": "\"There’s heaps of config snippets and you gotta perform troubleshooting and answer why the output says XYZ.\" Practice reading show command output and identifying misconfigurations.",
-          "col_e": "r/ccnp v1.2 exam advice"
-        },
-        {
-          "col_a": null,
-          "col_b": "STRATEGY",
-          "col_c": "Labs carry you — ace them and you can miss MCQs",
-          "col_d": "\"If you absolutely ace the labs, you are going to be fine getting some multiple choice questions incorrect.\" Labs are weighted heavily. One taker passed despite low Architecture, Security, and Automation MCQ scores because labs carried.",
-          "col_e": "March–April 2026 community report"
-        },
-        {
-          "col_a": null,
-          "col_b": "STRATEGY",
-          "col_c": "v1.2 is less scary than v1.1",
-          "col_d": "\"This version of ENCOR is not as scary as it seems. This is honestly what ENCOR should be — not the 5+ chapters of wireless crap.\" Removing wireless freed up study time for deeper automation prep.",
-          "col_e": "r/ccnp v1.2 exam advice (u/AccforBruiseadvice)"
-        },
-        {
-          "col_a": null,
-          "col_b": "MULTICAST",
-          "col_c": "Multicast is light (for now) despite expanded blueprint",
-          "col_d": "Only light conceptual multicast coverage reported so far. BiDir PIM, SSM, MSDP are on the blueprint but not showing up heavily in community reports. Know the fundamentals, don’t over-invest.",
-          "col_e": "r/ccnp v1.2 exam advice"
-        },
-        {
-          "col_a": null,
-          "col_b": "RESOURCES",
-          "col_c": "Study resources recommended by v1.2 passers",
-          "col_d": "• Arash Deljoo (Udemy) — highly rated by multiple passers\n• Boson ExSim-MAX — best for lab practice\n• CBT Nuggets v1.2 — video learning\n• Kevin Wallace updated course\n• NotebookLM + OCG PDF for active recall\n• Cisco U for hands-on labs",
-          "col_e": "r/ccnp + March–April 2026 community reports"
-        }
-      ]
-    },
-    {
-      "title": "11. APRIL 2026 EXAM UPDATES (Weeks 3-5 Post-v1.2)",
-      "icon": "📡",
-      "items": [
-        {
-          "col_a": null,
-          "col_b": "NEW",
-          "col_c": "JSON syntax validation is a question type",
-          "col_d": "Pick the valid JSON from 4 options — each has deliberate syntax errors (missing quotes, missing commas, trailing commas, wrong brackets). Practice spotting these cold. Example: {\"key\": \"value\"} vs {key: \"value\"} vs {\"key\": \"value\",}",
-          "col_e": "April 2026 community reports"
-        },
-        {
-          "col_a": null,
-          "col_b": "NEW",
-          "col_c": "Catalyst Center API directions are testable",
-          "col_d": "Know northbound, southbound, eastbound, westbound APIs for Catalyst Center (DNA Center). Northbound = toward business apps. Southbound = toward network devices. Eastbound/westbound = peer systems. This is v1.2 AI/Catalyst Center MCQ content.",
-          "col_e": "April 2026 community reports"
-        },
-        {
-          "col_a": null,
-          "col_b": "NEW",
-          "col_c": "Ansible, Chef, SaltStack comparison questions confirmed",
-          "col_d": "Agent vs. agentless is explicitly tested. Ansible = agentless (SSH/WinRM). Chef/Puppet = agent-based. SaltStack = both modes. Know which uses which transport and whether a persistent agent is required.",
-          "col_e": "r/ccnp + April 2026 community reports"
-        },
-        {
-          "col_a": null,
-          "col_b": "NEW",
-          "col_c": "LISP and VXLAN are active MCQ topics, not just background",
-          "col_d": "Multiple April testers confirm LISP (map-server, map-resolver, EID, RLOC) and VXLAN (VTEP, VNI, NVE) appear as real MCQ questions — not just in SD-Access context. Know these independently.",
-          "col_e": "r/ccnp April 2026"
-        },
-        {
-          "col_a": null,
-          "col_b": "NEW",
-          "col_c": "CoPP has 3 active lab variants — know all of them",
-          "col_d": "CoPP lab appears as: (1) 8000 bps police rate variant, (2) Telnet protection variant, (3) SSH protection variant. Each requires a different class-map match and policy. Practice all three — you won't know which you'll get.",
-          "col_e": "April 2026 community reports"
-        },
-        {
-          "col_a": null,
-          "col_b": "NEW",
-          "col_c": "OSPF has 3 active lab variants — know network cmd AND interface cmd",
-          "col_d": "OSPF lab seen as: (1) /18 subnet via interface command, (2) /19 via network command, (3) /20 via network command. The specific subnet mask changes — you must know both configuration methods and be able to derive the correct wildcard mask quickly.",
-          "col_e": "April 2026 community reports"
-        },
-        {
-          "col_a": null,
-          "col_b": "WARNING",
-          "col_c": "Time management is a real risk — labs can run 60-120 min",
-          "col_d": "Multiple April testers spent 60-120 minutes on labs, leaving less than 1 minute per MCQ. If you spend too long on a lab you can't go back to it anyway. Set a mental limit: if you're not done with a lab in 20-25 minutes, move on. An incomplete lab still earns partial credit.",
-          "col_e": "r/ccnp April 2026"
-        },
-        {
-          "col_a": null,
-          "col_b": "WARNING",
-          "col_c": "Expect fresh MCQ wording and unfamiliar scenarios",
-          "col_d": "By late April 2026, testers reported many MCQs with unfamiliar wording and scenario framing. This reinforces the core message: understand concepts deeply, don't rely on recognition. Use Boson + Pocket Prep for practice, but expect novel questions.",
-          "col_e": "April 2026 community reports"
-        }
-      ]
-    },
-    {
-      "title": "12. MAY 2026 EXAM UPDATES (Latest v1.2 Reports)",
-      "icon": "🆕",
-      "items": [
-        {
-          "col_a": null,
-          "col_b": "MAY",
-          "col_c": "59 questions is the current common report",
-          "col_d": "Multiple May pass reports show 59 total items with 6 labs and ~53 non-lab questions. Treat 6 labs as locked-in and plan MCQ pacing around roughly 50+ remaining items, not a small theory section.",
-          "col_e": "May 2026 community reports + r/ccnp v1.2 threads"
-        },
-        {
-          "col_a": null,
-          "col_b": "LAB",
-          "col_c": "OSPF now includes DR election and “no network statement” variants",
-          "col_d": "May reports add OSPF tasks beyond plain summarization: configure R2 as DR, advertise networks, and handle a variant that specifically says not to use the network statement. Practice interface-level OSPF, network-statement OSPF, DR priority, and wildcard math.",
-          "col_e": "May 2026 community reports"
-        },
-        {
-          "col_a": null,
-          "col_b": "LAB",
-          "col_c": "Voice VLAN/LLDP and IPv4/IPv6 assignment appeared as surprise labs",
-          "col_d": "One May report listed four labs instead of the usual six, including Voice VLAN/LLDP and IPv4 + IPv6 address assignment. Do not over-focus here, but know switchport voice vlan, lldp run, lldp neighbor checks, and basic IPv6 interface assignment.",
-          "col_e": "May 2026 community reports"
-        },
-        {
-          "col_a": null,
-          "col_b": "LAB",
-          "col_c": "NetFlow/IP SLA variants are more specific now",
-          "col_d": "May variants mention adding UDP port 2055, destination IP, IP SLA HTTP, and ICMP versions. Also note: NetFlow v9 may be default and may not show in running-config, so verify with show flow/exporter commands instead of assuming missing config.",
-          "col_e": "May 2026 community reports"
-        },
-        {
-          "col_a": null,
-          "col_b": "LAB",
-          "col_c": "eBGP address-family version is active",
-          "col_d": "May reports show eBGP Neighbor Sim 2 with /17 or /18 summaries and IPv4 address-family work. Drill neighbor activation, network statements under address-family ipv4, loopback/update-source logic, and summary mask math.",
-          "col_e": "May 2026 community reports"
-        },
-        {
-          "col_a": null,
-          "col_b": "LAB",
-          "col_c": "CoPP/ACL SSH variant may require numeric port 22",
-          "col_d": "A May report says the SSH CoPP/ACL variant expected port 22 instead of the ssh keyword. Practice matching both keyword and numeric forms, plus ICMP and EIGRP ACL/CoPP variants.",
-          "col_e": "May 2026 community reports"
-        },
-        {
-          "col_a": null,
-          "col_b": "SURPRISE",
-          "col_c": "Wireless remnants still show up even though wireless was removed",
-          "col_d": "May reports mention WLC, CAPWAP, AP modes, and RRM questions. Keep this lightweight: know definitions and roles, but do not rebuild full v1.1 wireless study plan.",
-          "col_e": "May 2026 community reports + r/ccnp v1.2 thread"
-        },
-        {
-          "col_a": null,
-          "col_b": "API",
-          "col_c": "HTTP DELETE / 204 No Content and HTTP/2 behavior showed up",
-          "col_d": "New automation details include a curl -X DELETE returning HTTP/1.1 204 No Content, plus HTTP/2 REST API single-point vs multi-point connection behavior. Add these to automation flashcards with common HTTP status codes.",
-          "col_e": "May 2026 community reports"
-        },
-        {
-          "col_a": null,
-          "col_b": "SDA",
-          "col_c": "Wireless over-the-top fabric wording is testable",
-          "col_d": "A May report called out SD-Access wired/wireless coexistence where wireless is deployed “over the top” of the fabric. Know the difference between fabric-enabled wireless and over-the-top wireless at concept level.",
-          "col_e": "May 2026 community reports"
-        },
-        {
-          "col_a": null,
-          "col_b": "LISP",
-          "col_c": "Map Resolver function tested more specifically",
-          "col_d": "May report: LISP Map Resolver decapsulates map-request messages from ITRs and forwards them to the Map Server. Make flashcards for EID, RLOC, ITR, ETR, Map Server, and Map Resolver functions.",
-          "col_e": "May 2026 community reports"
-        },
-        {
-          "col_a": null,
-          "col_b": "MCQ",
-          "col_c": "Classic infrastructure one-liners still matter",
-          "col_d": "May reports mention VSS single point of management, SSO for redundant supervisor takeover, PIM RP benefits, and QoS interpretation. These are small points, but easy wins if memorized cleanly.",
-          "col_e": "May 2026 community reports"
-        },
-        {
-          "col_a": null,
-          "col_b": "TREND",
-          "col_c": "Lab families look stable; MCQ topics keep rotating",
-          "col_d": "May reports still point to the same broad lab families, but users report fresh MCQ wording and different topic mixes per test taker. Translation: build concept depth and troubleshooting skill, not recognition memory.",
-          "col_e": "May 2026 community reports + r/ccnp v1.2 threads"
+          "col_b": "->",
+          "col_c": "r/ccnp for broad study habits only",
+          "col_d": "Useful for motivation, resource reviews, and study workflows. Skip posts or comments that disclose remembered exam content.",
+          "col_e": "Community resource with boundaries",
+          "url": "https://www.reddit.com/r/ccnp/"
         }
       ]
     }

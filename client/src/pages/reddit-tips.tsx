@@ -41,9 +41,9 @@ export default function RedditTips() {
   return (
     <div className="p-4 md:p-6 space-y-4" data-testid="page-reddit-tips">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">Reddit Tips & Wisdom</h1>
+        <h1 className="text-xl font-semibold tracking-tight">Ethical Study Notes</h1>
         <p className="text-sm text-muted-foreground">
-          Crowdsourced exam tips from r/ccnp — {tips.length} sections of battle-tested advice
+          Compliance-safe ENCOR prep guidance — {tips.length} sections focused on blueprint-based study
         </p>
       </div>
 
